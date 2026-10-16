@@ -8,6 +8,7 @@ A native Windows camera-to-input app for a 3D-printed H-pattern shifter. The liv
 
 - The main window appears before camera discovery starts; the DirectShow scan now runs in a background STA thread instead of blocking startup.
 - Startup and unhandled errors now show a message and write details to `%LOCALAPPDATA%\ShifterTracker\startup.log`.
+- Fix startup selection of the output mode, which was previously set before its options were populated; all ComboBox selection writes now clamp to the available entries and safely allow an empty list.
 
 ## Features first released in 1.0.0
 

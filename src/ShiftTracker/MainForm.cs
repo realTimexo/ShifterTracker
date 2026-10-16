@@ -325,7 +325,7 @@ public sealed class MainForm : Form
         header.Controls.Add(headerStatus);
         languageSelect.DropDownStyle = ComboBoxStyle.DropDownList;
         languageSelect.Items.AddRange(["English", "Deutsch"]);
-        languageSelect.SelectedIndex = language == "de" ? 1 : 0;
+        SetComboSelection(languageSelect, language == "de" ? 1 : 0);
         StyleCombo(languageSelect);
         languageSelect.Width = 120;
         languageSelect.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -537,13 +537,13 @@ public sealed class MainForm : Form
         mirrorV.AutoSize = true; mirrorV.BackColor = Card; mirrorV.ForeColor = Ink; mirrorV.SetBounds(218, 178, 190, 24); Bind(mirrorV, "setup.mirrorV"); settings.Controls.Add(mirrorV);
         AddComboField(settings, "setup.version", versionSelect, 500, 166, 300, ["setup.v1", "setup.v2"]);
 
-        viewSelect.SelectedIndex = selectedViewIndex;
-        rotationSelect.SelectedIndex = selectedRotation;
-        trackingSelect.SelectedIndex = selectedTrackingIndex;
-        alignmentSelect.SelectedIndex = adaptiveAlignment ? 1 : 0;
+        SetComboSelection(viewSelect, selectedViewIndex);
+        SetComboSelection(rotationSelect, selectedRotation);
+        SetComboSelection(trackingSelect, selectedTrackingIndex);
+        SetComboSelection(alignmentSelect, adaptiveAlignment ? 1 : 0);
         mirrorH.Checked = selectedMirrorH;
         mirrorV.Checked = selectedMirrorV;
-        versionSelect.SelectedIndex = selectedVersion2 ? 1 : 0;
+        SetComboSelection(versionSelect, selectedVersion2 ? 1 : 0);
         viewSelect.SelectedIndexChanged += (_, _) => { if (suppressUiEvents) return; selectedViewIndex = viewSelect.SelectedIndex; InvalidateCalibration("Camera perspective changed", "Kameraperspektive geändert"); };
         rotationSelect.SelectedIndexChanged += (_, _) => { if (suppressUiEvents) return; selectedRotation = Math.Max(0, rotationSelect.SelectedIndex); InvalidateCalibration("Image rotation changed", "Bilddrehung geändert"); };
         trackingSelect.SelectedIndexChanged += (_, _) => { if (suppressUiEvents) return; selectedTrackingIndex = Math.Max(0, trackingSelect.SelectedIndex); InvalidateCalibration("Recognition method changed", "Erkennungsmethode geändert"); RefreshSetupStatus(); };
@@ -589,7 +589,7 @@ public sealed class MainForm : Form
         output.Controls.Add(startOutputButton);
         outputStatus.AutoSize = true; outputStatus.Location = new Point(16, 83); outputStatus.ForeColor = Teal; outputStatus.Font = new Font("Segoe UI", 8F, FontStyle.Bold); output.Controls.Add(outputStatus);
         output.Controls.Add(Bind(new Label { AutoSize = false, Size = new Size(790, 54), Location = new Point(16, 107), Font = new Font("Segoe UI", 8F), ForeColor = Muted }, "inputs.driverHelp"));
-        outputSelect.SelectedIndex = selectedOutput switch { "vjoy" => 1, "xbox" => 2, _ => 0 };
+        PopulateOutputCombo();
         outputSelect.SelectedIndexChanged += (_, _) =>
         {
             if (suppressUiEvents) return;
@@ -628,7 +628,7 @@ public sealed class MainForm : Form
             padMapPanel.Controls.Add(lbl); padMapPanel.Controls.Add(combo); padBoxes[state] = combo;
             foreach (var choice in PadChoices) combo.Items.Add(new PadChoice(choice.Id, choice.Short, choice.Button, choice.Hat));
             int selectedPad = Array.FindIndex(PadChoices, p => p.Id == padAssignments[state]);
-            if (combo.Items.Count > 0) combo.SelectedIndex = Math.Clamp(selectedPad, 0, combo.Items.Count - 1);
+            SetComboSelection(combo, selectedPad);
             combo.SelectedIndexChanged += (_, _) =>
             {
                 if (combo.SelectedItem is PadChoice choice)
@@ -734,8 +734,14 @@ public sealed class MainForm : Form
         suppressUiEvents = true;
         combo.Items.Clear();
         foreach (string key in keys) combo.Items.Add(T(key));
-        combo.SelectedIndex = Math.Clamp(selected, 0, Math.Max(0, combo.Items.Count - 1));
+        SetComboSelection(combo, selected);
         suppressUiEvents = wasSuppressing;
+    }
+
+    private static void SetComboSelection(ComboBox combo, int preferredIndex)
+    {
+        int count = combo.Items.Count;
+        combo.SelectedIndex = count == 0 ? -1 : Math.Clamp(preferredIndex, 0, count - 1);
     }
 
     private void ApplyLanguage()
@@ -751,7 +757,7 @@ public sealed class MainForm : Form
         if (alignmentSelect.Tag is string[] engineKeys) PopulateCombo(alignmentSelect, engineKeys, adaptiveAlignment ? 1 : 0);
         if (versionSelect.Tag is string[] versionKeys) PopulateCombo(versionSelect, versionKeys, selectedVersion2 ? 1 : 0);
         PopulateOutputCombo();
-        languageSelect.SelectedIndex = language == "de" ? 1 : 0;
+        SetComboSelection(languageSelect, language == "de" ? 1 : 0);
         suppressUiEvents = false;
         RefreshVersionUi();
         RefreshOutputUi();
@@ -769,7 +775,7 @@ public sealed class MainForm : Form
         outputSelect.Items.Add(T("inputs.keyboard"));
         outputSelect.Items.Add(T("inputs.vjoy"));
         outputSelect.Items.Add(T("inputs.virtual"));
-        outputSelect.SelectedIndex = selected;
+        SetComboSelection(outputSelect, selected);
         suppressUiEvents = wasSuppressing;
     }
 
@@ -920,7 +926,7 @@ public sealed class MainForm : Form
                 int choice = -1;
                 for (int i = 0; i < cameraSelect.Items.Count; i++)
                     if (cameraSelect.Items[i] is CameraItem item && item.Index == previous) choice = i;
-                cameraSelect.SelectedIndex = choice >= 0 ? choice : (cameraSelect.Items.Count > 0 ? 0 : -1);
+                SetComboSelection(cameraSelect, choice >= 0 ? choice : 0);
                 if (cameraSelect.SelectedItem is CameraItem selected) selectedCamera = selected.Index;
             }
             finally { cameraSelect.EndUpdate(); }
