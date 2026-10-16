@@ -4,6 +4,7 @@
 
 - Show the main window before probing cameras; move DirectShow enumeration to a background STA thread so a slow device does not block startup.
 - Add visible startup/unhandled-error dialogs and a persistent `%LOCALAPPDATA%\ShifterTracker\startup.log` for diagnosis.
+- Fix gamepad mapping ComboBox initialization so the startup selection is only applied after its choices are populated; avoids an invalid `SelectedIndex` crash on Windows.
 
 ## 1.0.0 — 2026-10-16 — Stable
 

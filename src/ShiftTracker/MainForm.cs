@@ -625,8 +625,10 @@ public sealed class MainForm : Form
             int x = 16 + (i % 3) * 258, y = 84 + (i / 3) * 48;
             var lbl = new Label { Text = StateName(state), ForeColor = Ink, Font = new Font("Segoe UI", 9F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft, Location = new Point(x, y), Size = new Size(54, 28) };
             var combo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Location = new Point(x + 58, y), Size = new Size(145, 28), BackColor = Raised, ForeColor = Ink, FlatStyle = FlatStyle.Flat };
+            padMapPanel.Controls.Add(lbl); padMapPanel.Controls.Add(combo); padBoxes[state] = combo;
             foreach (var choice in PadChoices) combo.Items.Add(new PadChoice(choice.Id, choice.Short, choice.Button, choice.Hat));
-            combo.SelectedIndex = Math.Max(0, Array.FindIndex(PadChoices, p => p.Id == padAssignments[state]));
+            int selectedPad = Array.FindIndex(PadChoices, p => p.Id == padAssignments[state]);
+            if (combo.Items.Count > 0) combo.SelectedIndex = Math.Clamp(selectedPad, 0, combo.Items.Count - 1);
             combo.SelectedIndexChanged += (_, _) =>
             {
                 if (combo.SelectedItem is PadChoice choice)
@@ -635,7 +637,6 @@ public sealed class MainForm : Form
                     SaveSettings();
                 }
             };
-            padMapPanel.Controls.Add(lbl); padMapPanel.Controls.Add(combo); padBoxes[state] = combo;
         }
 
         var options = NewCard(); options.Size = new Size(830, 104); options.Margin = new Padding(0, 10, 0, 0); scroll.Controls.Add(options);
