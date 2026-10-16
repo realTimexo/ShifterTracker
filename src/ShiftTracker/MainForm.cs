@@ -129,7 +129,7 @@ public sealed class MainForm : Form
         ["status.trackingLost"] = ("ALIGNMENT LOST · OUTPUT HELD", "AUSRICHTUNG VERLOREN · AUSGABE GEHALTEN"),
         ["status.driverReady"] = ("VIRTUAL GAMEPAD READY", "VIRTUELLES GAMEPAD BEREIT"),
         ["status.vjoyReady"] = ("VJOY DEVICE 1 READY", "VJOY-GERÄT 1 BEREIT"),
-        ["log.started"] = ("ShifterTracker 1.0.0 started. Settings stay on this PC.", "ShifterTracker 1.0.0 gestartet. Einstellungen bleiben auf diesem PC."),
+        ["log.started"] = ("ShifterTracker 1.0.1 started. Settings stay on this PC.", "ShifterTracker 1.0.1 gestartet. Einstellungen bleiben auf diesem PC."),
         ["log.scan"] = ("Camera scan found {0} device(s).", "Kamerasuche: {0} Gerät(e) gefunden."),
         ["log.noCamera"] = ("No camera was found.", "Keine Kamera gefunden."),
         ["log.cameraConnected"] = ("Camera {0} connected · 640×480 / fast profile.", "Kamera {0} verbunden · schnelles Profil 640×480."),
@@ -230,6 +230,7 @@ public sealed class MainForm : Form
     private bool outputBusy;
     private bool v2PumpRunning;
     private bool autoStartGamepad;
+    private Task? cameraScanTask;
     private string? alignmentAnchorBase64;
     private (int H, int S, int V)? markerColor;
     private (double X, double Y)? detected;
@@ -255,7 +256,7 @@ public sealed class MainForm : Form
     public MainForm(bool startVirtualGamepad = false)
     {
         autoStartGamepad = startVirtualGamepad;
-        Text = "ShifterTracker 1.0.0";
+        Text = "ShifterTracker 1.0.1";
         MinimumSize = new Size(1080, 720);
         Size = new Size(1320, 850);
         BackColor = Canvas;
@@ -266,7 +267,6 @@ public sealed class MainForm : Form
 
         LoadSettings();
         BuildUi();
-        ScanCameras(false);
         frameTimer.Interval = selectedVersion2 ? 16 : 33;
         frameTimer.Tick += (_, _) => FrameTick();
         frameTimer.Start();
@@ -283,6 +283,7 @@ public sealed class MainForm : Form
                 autoStartGamepad = false;
                 await StartOutputAsync();
             }
+            if (!IsDisposed) await ScanCamerasAsync(false);
         };
         FormClosing += (_, _) => Shutdown();
     }
@@ -358,7 +359,7 @@ public sealed class MainForm : Form
         AddNav(navFlow, "nav.setup", "02", () => ShowPage(1));
         AddNav(navFlow, "nav.inputs", "03", () => ShowPage(2));
         AddNav(navFlow, "nav.dev", "04", () => ShowPage(3));
-        var footer = new Label { Text = "V1.0.0  /  WINDOWS X64", ForeColor = Muted, Font = new Font("Segoe UI", 7.5F, FontStyle.Bold), AutoSize = true, Dock = DockStyle.Bottom, Padding = new Padding(0, 0, 0, 12) };
+        var footer = new Label { Text = "V1.0.1  /  WINDOWS X64", ForeColor = Muted, Font = new Font("Segoe UI", 7.5F, FontStyle.Bold), AutoSize = true, Dock = DockStyle.Bottom, Padding = new Padding(0, 0, 0, 12) };
         rail.Controls.Add(footer);
 
         pageHost.Dock = DockStyle.Fill;
@@ -522,7 +523,7 @@ public sealed class MainForm : Form
         camera.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(15, 12), Font = new Font("Segoe UI", 9F, FontStyle.Bold), ForeColor = Ink }, "camera.heading"));
         camera.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(15, 36), Font = new Font("Segoe UI", 8F), ForeColor = Muted }, "camera.desc"));
         StyleCombo(cameraSelect); cameraSelect.DropDownStyle = ComboBoxStyle.DropDownList; cameraSelect.SetBounds(16, 66, 300, 28); camera.Controls.Add(cameraSelect);
-        var scan = MakeButton("camera.scan", () => ScanCameras(true), false); scan.SetBounds(326, 64, 132, 32); camera.Controls.Add(scan);
+        var scan = MakeButton("camera.scan", () => { _ = ScanCamerasAsync(true); }, false); scan.SetBounds(326, 64, 132, 32); camera.Controls.Add(scan);
         var connect = MakeButton("camera.connect", ConnectCamera, true); connect.SetBounds(468, 64, 116, 32); camera.Controls.Add(connect);
 
         var settings = NewCard(); settings.Size = new Size(830, 220); settings.Margin = new Padding(0, 10, 0, 0);
@@ -887,46 +888,105 @@ public sealed class MainForm : Form
         return route.ToArray();
     }
 
-    private void ScanCameras(bool report)
+    private async Task ScanCamerasAsync(bool report)
+    {
+        if (cameraScanTask is not null)
+        {
+            await cameraScanTask;
+            return;
+        }
+        Task task = ScanCamerasCoreAsync(report);
+        cameraScanTask = task;
+        try { await task; }
+        finally { if (ReferenceEquals(cameraScanTask, task)) cameraScanTask = null; }
+    }
+
+    private async Task ScanCamerasCoreAsync(bool report)
     {
         int previous = selectedCamera;
-        cameraSelect.Items.Clear();
-        for (int index = 0; index < 10; index++)
+        if (IsDisposed || cameraSelect.IsDisposed) return;
+        cameraSelect.Enabled = false;
+        cameraStatus.Text = language == "de" ? "Kameras werden gesucht…" : "Searching for cameras…";
+        try
+        {
+            int[] indices = await ProbeCameraIndicesAsync();
+            if (IsDisposed || cameraSelect.IsDisposed) return;
+            cameraSelect.BeginUpdate();
+            try
+            {
+                cameraSelect.Items.Clear();
+                foreach (int index in indices) cameraSelect.Items.Add(new CameraItem(index, CameraLabel(index)));
+                int choice = -1;
+                for (int i = 0; i < cameraSelect.Items.Count; i++)
+                    if (cameraSelect.Items[i] is CameraItem item && item.Index == previous) choice = i;
+                cameraSelect.SelectedIndex = choice >= 0 ? choice : (cameraSelect.Items.Count > 0 ? 0 : -1);
+                if (cameraSelect.SelectedItem is CameraItem selected) selectedCamera = selected.Index;
+            }
+            finally { cameraSelect.EndUpdate(); }
+
+            if (cameraSelect.Items.Count == 0)
+            {
+                SetStatus("status.cameraMissing", false);
+                cameraStatus.Text = T("camera.none");
+                if (report) Log(T("log.noCamera"));
+            }
+            else
+            {
+                if (capture is null || !capture.IsOpened()) SetStatus("status.ready", true);
+                cameraStatus.Text = string.Format(language == "de" ? "{0} Kamera(s) gefunden" : "{0} camera(s) found", cameraSelect.Items.Count);
+                if (report) Log(string.Format(T("log.scan"), cameraSelect.Items.Count));
+            }
+        }
+        catch (Exception ex)
+        {
+            if (!IsDisposed)
+            {
+                SetStatus("status.cameraMissing", false);
+                cameraStatus.Text = T("camera.error");
+                if (report) Log(string.Format(T("log.cameraError"), previous) + " " + ex.Message);
+            }
+        }
+        finally
+        {
+            if (!IsDisposed && !cameraSelect.IsDisposed) cameraSelect.Enabled = true;
+        }
+    }
+
+    private static Task<int[]> ProbeCameraIndicesAsync()
+    {
+        var completion = new TaskCompletionSource<int[]>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var thread = new Thread(() =>
         {
             try
             {
-                using var test = new VideoCapture(index, VideoCaptureAPIs.DSHOW);
-                if (!test.IsOpened()) continue;
-                using var frame = new Mat();
-                if (test.Read(frame) && !frame.Empty()) cameraSelect.Items.Add(new CameraItem(index, CameraLabel(index)));
+                var found = new List<int>();
+                for (int index = 0; index < 10; index++)
+                {
+                    try
+                    {
+                        using var test = new VideoCapture(index, VideoCaptureAPIs.DSHOW);
+                        if (!test.IsOpened()) continue;
+                        using var frame = new Mat();
+                        if (test.Read(frame) && !frame.Empty()) found.Add(index);
+                    }
+                    catch { }
+                }
+                completion.TrySetResult(found.ToArray());
             }
-            catch { }
-        }
-        int choice = -1;
-        for (int i = 0; i < cameraSelect.Items.Count; i++)
-            if (cameraSelect.Items[i] is CameraItem item && item.Index == previous) choice = i;
-        cameraSelect.SelectedIndex = choice >= 0 ? choice : (cameraSelect.Items.Count > 0 ? 0 : -1);
-        if (cameraSelect.SelectedItem is CameraItem selected) selectedCamera = selected.Index;
-        if (cameraSelect.Items.Count == 0)
-        {
-            SetStatus("status.cameraMissing", false);
-            cameraStatus.Text = T("camera.none");
-            if (report) Log(T("log.noCamera"));
-        }
-        else
-        {
-            if (capture is null || !capture.IsOpened()) SetStatus("status.ready", true);
-            if (report) Log(string.Format(T("log.scan"), cameraSelect.Items.Count));
-        }
+            catch (Exception ex) { completion.TrySetException(ex); }
+        }) { IsBackground = true, Name = "ShifterTracker camera scan" };
+        thread.SetApartmentState(ApartmentState.STA);
+        thread.Start();
+        return completion.Task;
     }
 
     private string CameraLabel(int index) => (language == "de" ? "Kamera " : "Camera ") + index;
 
-    private void ConnectCamera()
+    private async void ConnectCamera()
     {
         if (cameraSelect.SelectedItem is not CameraItem item)
         {
-            ScanCameras(true);
+            await ScanCamerasAsync(true);
             if (cameraSelect.SelectedItem is not CameraItem found) return;
             item = found;
         }

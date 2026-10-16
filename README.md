@@ -2,9 +2,14 @@
 
 A native Windows camera-to-input app for a 3D-printed H-pattern shifter. The live view shows the recognized position, the H-pattern diagram highlights it, and the selected game input is updated when the lever moves.
 
-**Current release: 1.0.0** · Windows 10/11 x64 · .NET 10 self-contained single-file executable
+**Current release: 1.0.1** · Windows 10/11 x64 · .NET 10 self-contained single-file executable
 
-## What is new in 1.0.0
+## What's new in 1.0.1
+
+- The main window appears before camera discovery starts; the DirectShow scan now runs in a background STA thread instead of blocking startup.
+- Startup and unhandled errors now show a message and write details to `%LOCALAPPDATA%\ShifterTracker\startup.log`.
+
+## Features first released in 1.0.0
 
 - **Adaptive V2 tracking:** recognizes fixed features on the outer shifter housing, estimates small camera translation/rotation/scale changes every frame with ORB feature matching and a RANSAC similarity transform, then aligns the frame to the saved calibration reference before classifying the lever.
 - **Fail-safe behavior:** if the background alignment is ambiguous or outside its supported range, the frame is rejected and the last output is held; it does not guess a different gear.
@@ -14,7 +19,7 @@ A native Windows camera-to-input app for a 3D-printed H-pattern shifter. The liv
 
 ## Download and run
 
-1. Download `ShiftTracker-v1.0.0-win-x64.exe` for the direct single-file app, or `ShiftTracker-v1.0.0-win-x64.zip` for the app plus quick-start and license notices, from the [GitHub Releases page](https://github.com/realTimexo/ShifterTracker/releases).
+1. Download `ShiftTracker-v1.0.1-win-x64.exe` for the direct single-file app, or `ShiftTracker-v1.0.1-win-x64.zip` for the app plus quick-start and license notices, from the [GitHub Releases page](https://github.com/realTimexo/ShifterTracker/releases).
 2. Extract it and run `ShiftTracker.exe`. No Python or separately installed .NET runtime is needed.
 3. In **Setup & Tracking**, select and connect the camera. The initial view is **Bottom-up (reference photos)**; adjust rotation or mirroring if needed.
 4. Select **Adaptive V2** (recommended), then choose **Image matching** for marker-free tracking or **Color marker** if a high-contrast marker is fitted.
@@ -23,6 +28,8 @@ A native Windows camera-to-input app for a 3D-printed H-pattern shifter. The liv
 7. Bind the chosen keyboard keys or gamepad buttons to the corresponding gear actions in BeamNG once. ShifterTracker does not change BeamNG's control configuration for you.
 
 Settings, camera choice, calibration images, language and mappings are stored locally in `%LOCALAPPDATA%\ShifterTracker\settings.json`.
+
+If startup still fails, read `%LOCALAPPDATA%\ShifterTracker\startup.log` and include it in a bug report. Camera discovery runs after the window is displayed, so a slow camera should no longer make startup appear blank.
 
 ## Tracking modes
 
@@ -79,7 +86,7 @@ The output and checksum are placed under `artifacts/`. Third-party binary depend
 
 ## Releases
 
-Tags named `v*` build and publish a GitHub Release with the Windows ZIP and SHA-256 checksum. Tags containing `-alpha` or `-beta` are marked pre-releases. The 1.0.0 repository release starts the stable release line; older alpha/beta builds are published only when their original assets are available for verification.
+Tags named `v*` build and publish a GitHub Release with the Windows EXE, ZIP and SHA-256 checksums. Tags containing `-alpha` or `-beta` are marked pre-releases. Version 1.0.0 was the first stable release; 1.0.1 fixes startup responsiveness and adds startup diagnostics. Earlier prototypes are not retroactively labeled without verifiable original release assets.
 
 ## License
 

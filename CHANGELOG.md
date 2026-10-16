@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 — 2026-10-16 — Stable patch
+
+- Show the main window before probing cameras; move DirectShow enumeration to a background STA thread so a slow device does not block startup.
+- Add visible startup/unhandled-error dialogs and a persistent `%LOCALAPPDATA%\ShifterTracker\startup.log` for diagnosis.
+
 ## 1.0.0 — 2026-10-16 — Stable
 
 - First stable release in the `realTimexo/ShifterTracker` repository.

@@ -1,4 +1,4 @@
-ShifterTracker 1.0.0 — Quick start
+ShifterTracker 1.0.1 — Quick start
 
 1. Extract the ZIP and run ShiftTracker.exe.
 2. Open Setup & Tracking, select your camera, and press Connect.
@@ -15,3 +15,5 @@ ShifterTracker 1.0.0 — Quick start
 If the adaptive alignment confidence drops, stop and reposition the camera so the fixed outer housing is visible. Recalibrate after changing camera angle, rotation, mirror, or tracking method.
 
 Test in a stationary vehicle before driving. The virtual Xbox mode installs a Windows virtual-HID driver only after it is explicitly selected and confirmed; Windows administrator approval is required. Keyboard mode does not install a driver.
+
+If the app still cannot start, check `%LOCALAPPDATA%\ShifterTracker\startup.log` and include it when reporting the problem.
