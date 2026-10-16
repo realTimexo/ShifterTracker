@@ -1,0 +1,17 @@
+ShifterTracker 1.0.0 — Quick start
+
+1. Extract the ZIP and run ShiftTracker.exe.
+2. Open Setup & Tracking, select your camera, and press Connect.
+3. Choose Bottom-up for the supplied camera angle. Adjust rotate/mirror if needed.
+4. Select V2 and Adaptive alignment. Keep the camera still while the first adaptive reference is captured.
+5. Capture each displayed state with the shifter in that position: 1–5, R, N-L, N and N-R.
+6. Open Inputs & Output and choose:
+   - Keyboard: click each field and press a key. No driver is needed.
+   - Virtual Xbox 360 gamepad: click Start output. Only this explicit choice offers an optional driver install; review the notice and approve the Windows administrator prompt if you want to continue.
+   - vJoy: use only if vJoy is already installed and configured.
+7. Bind each selected key or gamepad input to the matching gear action in BeamNG. ShifterTracker does not change BeamNG controls automatically.
+8. Return to Live View, check the detected state and highlighted H-pattern position, then press Arm detection.
+
+If the adaptive alignment confidence drops, stop and reposition the camera so the fixed outer housing is visible. Recalibrate after changing camera angle, rotation, mirror, or tracking method.
+
+Test in a stationary vehicle before driving. The virtual Xbox mode installs a Windows virtual-HID driver only when explicitly selected and confirmed; Windows administrator approval is required. Keyboard mode does not install a driver.

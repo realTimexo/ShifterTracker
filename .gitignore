@@ -1,0 +1,13 @@
+# .NET build output
+**/bin/
+**/obj/
+artifacts/
+
+# Build-time downloaded runtime assemblies; fetched from the pinned upstream release
+src/ShiftTracker/ThirdParty/*.dll
+
+# IDE and local settings
+.vs/
+*.user
+*.suo
+*.cache
