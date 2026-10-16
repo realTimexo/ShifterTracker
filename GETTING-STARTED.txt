@@ -7,11 +7,11 @@ ShifterTracker 1.0.0 — Quick start
 5. Capture each displayed state with the shifter in that position: 1–5, R, N-L, N and N-R.
 6. Open Inputs & Output and choose:
    - Keyboard: click each field and press a key. No driver is needed.
-   - Virtual Xbox 360 gamepad: click Start output. Only this explicit choice offers an optional driver install; review the notice and approve the Windows administrator prompt if you want to continue.
+   - Virtual Xbox 360 gamepad: click Start output. ShifterTracker asks to relaunch elevated; approve UAC if you want to continue. On first use, the elevated app separately asks before installing its bundled virtual-HID driver and signing certificate. Driver installation is one-time, but UAC may appear each time you start virtual-gamepad mode.
    - vJoy: use only if vJoy is already installed and configured.
 7. Bind each selected key or gamepad input to the matching gear action in BeamNG. ShifterTracker does not change BeamNG controls automatically.
 8. Return to Live View, check the detected state and highlighted H-pattern position, then press Arm detection.
 
 If the adaptive alignment confidence drops, stop and reposition the camera so the fixed outer housing is visible. Recalibrate after changing camera angle, rotation, mirror, or tracking method.
 
-Test in a stationary vehicle before driving. The virtual Xbox mode installs a Windows virtual-HID driver only when explicitly selected and confirmed; Windows administrator approval is required. Keyboard mode does not install a driver.
+Test in a stationary vehicle before driving. The virtual Xbox mode installs a Windows virtual-HID driver only after it is explicitly selected and confirmed; Windows administrator approval is required. Keyboard mode does not install a driver.

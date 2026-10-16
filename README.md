@@ -51,9 +51,9 @@ Captures real key presses: click a gear's field and press the desired key. Defau
 
 ### Built-in virtual Xbox 360 gamepad
 
-This exposes one held gamepad input for the active state, so BeamNG can bind the positions as controller inputs. The defaults use the four D-pad directions and face/shoulder buttons; they avoid Xbox Start/Back menu buttons. It uses the bundled HIDMaestro virtual-HID driver. Windows requires administrator approval to create a virtual controller: the first use offers a clear consent prompt, installs the bundled UMDF driver and locally trusted signing certificate, and then requests an elevated tracker session for virtual-pad use. The tracker app itself is not installed as a separate program. If you do not want a driver or administrator prompt, choose keyboard output instead. No driver is installed merely by downloading or opening the app.
+This exposes one held gamepad input for the active state, so BeamNG can bind the positions as controller inputs. The defaults use the four D-pad directions and face/shoulder buttons; they avoid Xbox Start/Back menu buttons. It uses the bundled HIDMaestro virtual-HID driver. When you start this output, ShifterTracker asks to relaunch elevated; approve Windows UAC if you want to continue. On the first use, the elevated app separately asks for consent before installing the bundled UMDF driver and local signing certificate. This driver installation is one-time (unless the driver is later updated). The tracker app itself is not installed as a separate program. If you do not want a driver or administrator prompt, choose keyboard output instead. No driver is installed merely by downloading or opening the app.
 
-**Security note:** review the prompt before accepting it. The driver installation changes Windows' local device/certificate state. The driver is optional and only requested when you explicitly start the virtual gamepad output. Driver creation still needs administrator approval each session.
+**Security note:** review each prompt before accepting it. The optional driver installation changes Windows' local device/certificate state and is only requested when you explicitly start virtual-gamepad output. The virtual-gamepad session may require an elevated app and a UAC prompt each time you start it; the driver itself is not reinstalled each time.
 
 ### vJoy / DirectInput
 
