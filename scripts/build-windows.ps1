@@ -57,7 +57,8 @@ $exeAsset = Join-Path $artifacts "ShiftTracker-v$version-win-x64.exe"
 if (Test-Path $exeAsset) { Remove-Item $exeAsset -Force }
 Copy-Item (Join-Path $staging 'ShiftTracker.exe') $exeAsset
 foreach ($asset in $licenseAssets) {
-    Copy-Item (Join-Path $repo $asset.Source) (Join-Path $artifacts $asset.Name)
+    $sourcePath = if ([IO.Path]::IsPathRooted($asset.Source)) { $asset.Source } else { Join-Path $repo $asset.Source }
+    Copy-Item $sourcePath (Join-Path $artifacts $asset.Name)
 }
 $exeHash = (Get-FileHash -Path $exeAsset -Algorithm SHA256).Hash.ToLowerInvariant()
 Set-Content -Path "$exeAsset.sha256" -Value "$exeHash  $(Split-Path $exeAsset -Leaf)" -Encoding ascii
