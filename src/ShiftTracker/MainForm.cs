@@ -35,7 +35,7 @@ public sealed class MainForm : Form
     private static readonly Dictionary<string, (string En, string De)> Copy = new()
     {
         ["app.title"] = ("SHIFTTRACKER", "SHIFTTRACKER"),
-        ["app.subtitle"] = ("CAMERA-DRIVEN H-PATTERN INPUT", "KAMERA-GESTEUERTE H-SCHALTUNG"),
+        ["app.subtitle"] = ("H-PATTERN INPUT · TRACK THE KNOB", "H-SCHALTUNG · SCHALTKNAUF TRACKEN"),
         ["nav.live"] = ("Live view", "Live-Ansicht"),
         ["nav.setup"] = ("Setup & tracking", "Setup & Tracking"),
         ["nav.inputs"] = ("Inputs & output", "Eingaben & Ausgabe"),
@@ -62,7 +62,7 @@ public sealed class MainForm : Form
         ["setup.orientation"] = ("View & image orientation", "Ansicht & Bildausrichtung"),
         ["setup.view"] = ("Camera perspective", "Kameraperspektive"),
         ["setup.top"] = ("Top-down", "Von oben"),
-        ["setup.bottom"] = ("Bottom-up (reference photos)", "Von unten (Referenzbilder)"),
+        ["setup.bottom"] = ("Bottom-up", "Von unten"),
         ["setup.rotation"] = ("Rotate image", "Bild drehen"),
         ["setup.rotate0"] = ("0°", "0°"),
         ["setup.rotate90"] = ("90° clockwise", "90° im Uhrzeigersinn"),
@@ -73,9 +73,11 @@ public sealed class MainForm : Form
         ["setup.tracking"] = ("Recognition method", "Erkennungsmethode"),
         ["setup.markerMode"] = ("Color marker", "Farbmarker"),
         ["setup.imageMode"] = ("Image matching (no sticker)", "Bildvergleich (ohne Aufkleber)"),
-        ["setup.engine"] = ("Camera movement compensation", "Kamerabewegung ausgleichen"),
-        ["setup.legacy"] = ("Legacy · fixed camera", "Alt · feste Kamera"),
-        ["setup.adaptive"] = ("Adaptive V2 · re-align each frame", "Adaptiv V2 · jedes Bild neu ausrichten"),
+        ["setup.engine"] = ("Tracking engine", "Tracking-Verfahren"),
+        ["setup.cameraSettings"] = ("CAMERA SETTINGS", "KAMERAEINSTELLUNGEN"),
+        ["setup.legacy"] = ("V1 · fixed camera", "V1 · feste Kamera"),
+        ["setup.adaptive"] = ("V2 · background alignment", "V2 · Hintergrund-Ausrichtung"),
+        ["setup.knobV3"] = ("V3 · direct knob", "V3 · direkt am Knauf"),
         ["setup.version"] = ("Shift protocol", "Schaltprotokoll"),
         ["setup.v1"] = ("V1 · direct gear output", "V1 · direkte Gang-Ausgabe"),
         ["setup.v2"] = ("V2 · ordered neutral gates", "V2 · Neutralgassen-Sequenz"),
@@ -85,6 +87,7 @@ public sealed class MainForm : Form
         ["setup.clear"] = ("Clear calibration", "Kalibrierung löschen"),
         ["setup.progress"] = ("positions learned", "Positionen gelernt"),
         ["setup.markerHint"] = ("For marker mode, click the marker in the live image first.", "Im Farbmarker-Modus zuerst im Livebild auf den Marker klicken."),
+        ["setup.knobHint"] = ("V3: click the knob in the live view to lock onto its surface features, then teach each gear.", "V3: Im Livebild auf den Knauf klicken, um seine Oberflächenmerkmale zu erfassen, dann die Gänge einlernen."),
         ["inputs.title"] = ("Choose what the game receives", "Festlegen, was das Spiel empfängt"),
         ["inputs.output"] = ("Output device", "Ausgabegerät"),
         ["inputs.keyboard"] = ("Keyboard keys", "Tastaturtasten"),
@@ -102,6 +105,7 @@ public sealed class MainForm : Form
         ["inputs.driverTitle"] = ("One-time driver install; elevation each session", "Einmalige Treiberinstallation; Admin-Abfrage je Sitzung"),
         ["inputs.driverHelp"] = ("The virtual pad is built in. Windows still requires administrator approval to create a virtual device. On first use, the bundled UMDF driver and its local signing certificate are installed; the tracker itself is not installed as a separate program.", "Das virtuelle Gamepad ist integriert. Windows verlangt trotzdem Administratorrechte, um ein virtuelles Gerät anzulegen. Beim ersten Verwenden werden der gebündelte UMDF-Treiber und sein lokales Signaturzertifikat eingerichtet; der Tracker wird nicht als separates Programm installiert."),
         ["inputs.driverConfirm"] = ("Install the bundled HIDMaestro UMDF virtual-device driver? Windows will ask for administrator approval. This adds a locally trusted signing certificate. The driver is installed once; creating the virtual pad requires an elevated tracker session each time.", "Den gebündelten HIDMaestro-UMDF-Treiber installieren? Windows fragt nach Administratorrechten. Dabei wird ein lokal vertrautes Signaturzertifikat hinzugefügt. Der Treiber wird einmal installiert; zum Erstellen des virtuellen Gamepads benötigt jede Sitzung erhöhte Rechte."),
+        ["inputs.driverMigrationConfirm"] = ("HIDMaestro 2.0.0 may replace the older virtual-device driver the first time you use this output. Close every older ShifterTracker 1.x window first: a still-running 1.x app can remove HIDMaestro devices during migration. Continue to the driver check?", "HIDMaestro 2.0.0 aktualisiert bei der ersten Verwendung möglicherweise den älteren Treiber für virtuelle Geräte. Schließe zuerst alle älteren ShifterTracker-1.x-Fenster: Eine noch laufende 1.x-App kann HIDMaestro-Geräte während der Migration entfernen. Mit der Treiberprüfung fortfahren?"),
         ["inputs.elevateConfirm"] = ("The virtual gamepad requires administrator rights. The tracker will restart elevated for this session; the main app does not install separately. Continue?", "Das virtuelle Gamepad benötigt Administratorrechte. Der Tracker startet für diese Sitzung mit erhöhten Rechten neu; die Haupt-App wird nicht separat installiert. Fortfahren?"),
         ["inputs.notAdmin"] = ("Virtual gamepad needs administrator approval.", "Das virtuelle Gamepad benötigt Administratorrechte."),
         ["inputs.ready"] = ("Output ready", "Ausgabe bereit"),
@@ -129,7 +133,7 @@ public sealed class MainForm : Form
         ["status.trackingLost"] = ("ALIGNMENT LOST · OUTPUT HELD", "AUSRICHTUNG VERLOREN · AUSGABE GEHALTEN"),
         ["status.driverReady"] = ("VIRTUAL GAMEPAD READY", "VIRTUELLES GAMEPAD BEREIT"),
         ["status.vjoyReady"] = ("VJOY DEVICE 1 READY", "VJOY-GERÄT 1 BEREIT"),
-        ["log.started"] = ("ShifterTracker 1.0.1 started. Settings stay on this PC.", "ShifterTracker 1.0.1 gestartet. Einstellungen bleiben auf diesem PC."),
+        ["log.started"] = ("ShifterTracker 1.1.0 started. Settings stay on this PC.", "ShifterTracker 1.1.0 gestartet. Einstellungen bleiben auf diesem PC."),
         ["log.scan"] = ("Camera scan found {0} device(s).", "Kamerasuche: {0} Gerät(e) gefunden."),
         ["log.noCamera"] = ("No camera was found.", "Keine Kamera gefunden."),
         ["log.cameraConnected"] = ("Camera {0} connected · 640×480 / fast profile.", "Kamera {0} verbunden · schnelles Profil 640×480."),
@@ -168,6 +172,7 @@ public sealed class MainForm : Form
     private readonly Dictionary<string, Mat> imageTemplates = new();
     private readonly Stopwatch clock = Stopwatch.StartNew();
     private readonly MotionCompensator motionCompensator = new();
+    private readonly KnobObjectTracker knobTracker = new();
     private readonly System.Windows.Forms.Timer frameTimer = new() { Interval = 16 };
 
     private readonly ComboBox languageSelect = new();
@@ -221,7 +226,8 @@ public sealed class MainForm : Form
     private bool selectedMirrorH;
     private bool selectedMirrorV;
     private bool selectedVersion2 = true;
-    private bool adaptiveAlignment = true;
+    private bool adaptiveAlignment;
+    private int selectedTrackingEngine = 2;
     private bool doublePressEnabled = true;
     private int doublePressGapMs = 90;
     private bool suppressUiEvents;
@@ -230,6 +236,7 @@ public sealed class MainForm : Form
     private bool outputBusy;
     private bool v2PumpRunning;
     private bool autoStartGamepad;
+    private bool hidMaestroV2MigrationAcknowledged;
     private Task? cameraScanTask;
     private string? alignmentAnchorBase64;
     private (int H, int S, int V)? markerColor;
@@ -256,9 +263,9 @@ public sealed class MainForm : Form
     public MainForm(bool startVirtualGamepad = false)
     {
         autoStartGamepad = startVirtualGamepad;
-        Text = "ShifterTracker 1.0.1";
-        MinimumSize = new Size(1080, 720);
-        Size = new Size(1320, 850);
+        Text = "ShifterTracker 1.1.0";
+        MinimumSize = new Size(1280, 820);
+        Size = new Size(1580, 980);
         BackColor = Canvas;
         ForeColor = Ink;
         Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point);
@@ -267,7 +274,7 @@ public sealed class MainForm : Form
 
         LoadSettings();
         BuildUi();
-        frameTimer.Interval = selectedVersion2 ? 16 : 33;
+        frameTimer.Interval = selectedVersion2 || selectedTrackingEngine == 2 ? 16 : 33;
         frameTimer.Tick += (_, _) => FrameTick();
         frameTimer.Start();
         ApplyCameraProfile();
@@ -303,75 +310,196 @@ public sealed class MainForm : Form
 
     private void BuildUi()
     {
-        var root = new TableLayoutPanel
-        {
-            Dock = DockStyle.Fill, BackColor = Canvas, Padding = new Padding(18, 14, 18, 16),
-            ColumnCount = 1, RowCount = 2
-        };
-        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 62));
+        var root = new TableLayoutPanel { Dock = DockStyle.Fill, BackColor = Canvas, Padding = new Padding(16, 10, 16, 8), ColumnCount = 1, RowCount = 3 };
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 54));
         root.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        root.RowStyles.Add(new RowStyle(SizeType.Absolute, 34));
         Controls.Add(root);
 
         var header = new Panel { Dock = DockStyle.Fill, BackColor = Canvas };
         root.Controls.Add(header, 0, 0);
-        var appTitle = Bind(new Label { AutoSize = true, Font = new Font("Segoe UI Semibold", 18F, FontStyle.Bold), ForeColor = Ink, Location = new Point(0, 0) }, "app.title");
-        header.Controls.Add(appTitle);
-        var subtitle = Bind(new Label { AutoSize = true, Font = new Font("Segoe UI", 8F, FontStyle.Bold), ForeColor = Muted, Location = new Point(3, 35) }, "app.subtitle");
-        header.Controls.Add(subtitle);
-        headerStatus.AutoSize = true;
-        headerStatus.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        headerStatus.Location = new Point(790, 16);
-        headerStatus.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-        header.Controls.Add(headerStatus);
+        header.Controls.Add(Bind(new Label { AutoSize = true, Font = new Font("Segoe UI", 19F, FontStyle.Bold), ForeColor = Ink, Location = new Point(0, 0) }, "app.title"));
+        header.Controls.Add(Bind(new Label { AutoSize = true, Font = new Font("Segoe UI", 8F, FontStyle.Bold), ForeColor = Muted, Location = new Point(3, 34) }, "app.subtitle"));
+        headerStatus.AutoSize = true; headerStatus.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        headerStatus.Font = new Font("Segoe UI", 9F, FontStyle.Bold); header.Controls.Add(headerStatus);
         languageSelect.DropDownStyle = ComboBoxStyle.DropDownList;
         languageSelect.Items.AddRange(["English", "Deutsch"]);
         SetComboSelection(languageSelect, language == "de" ? 1 : 0);
-        StyleCombo(languageSelect);
-        languageSelect.Width = 120;
-        languageSelect.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        languageSelect.Location = new Point(1110, 11);
+        StyleCombo(languageSelect); languageSelect.Width = 116; languageSelect.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         languageSelect.SelectedIndexChanged += (_, _) =>
         {
             if (suppressUiEvents) return;
             language = languageSelect.SelectedIndex == 1 ? "de" : "en";
-            ApplyLanguage();
-            SaveSettings();
+            ApplyLanguage(); SaveSettings();
         };
         header.Controls.Add(languageSelect);
         header.Resize += (_, _) =>
         {
             languageSelect.Left = header.ClientSize.Width - languageSelect.Width;
             headerStatus.Left = languageSelect.Left - headerStatus.Width - 24;
+            headerStatus.Top = 15;
         };
 
-        var body = new TableLayoutPanel { Dock = DockStyle.Fill, BackColor = Canvas, ColumnCount = 2, RowCount = 1 };
-        body.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 190));
-        body.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        root.Controls.Add(body, 0, 1);
+        var columns = new TableLayoutPanel { Dock = DockStyle.Fill, BackColor = Canvas, ColumnCount = 2, RowCount = 1, Padding = new Padding(0, 7, 0, 5) };
+        columns.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+        columns.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+        root.Controls.Add(columns, 0, 1);
+        var left = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true, FlowDirection = FlowDirection.TopDown, WrapContents = false, BackColor = Canvas, Padding = new Padding(0, 0, 10, 8) };
+        columns.Controls.Add(left, 0, 0);
+        var right = new TableLayoutPanel { Dock = DockStyle.Fill, BackColor = Canvas, ColumnCount = 1, RowCount = 3, Padding = new Padding(8, 0, 0, 0) };
+        right.RowStyles.Add(new RowStyle(SizeType.Percent, 66));
+        right.RowStyles.Add(new RowStyle(SizeType.Absolute, 194));
+        right.RowStyles.Add(new RowStyle(SizeType.Percent, 34));
+        columns.Controls.Add(right, 1, 0);
 
-        var rail = new Panel { Dock = DockStyle.Fill, BackColor = Canvas, Padding = new Padding(0, 14, 14, 0) };
-        body.Controls.Add(rail, 0, 0);
-        var railRule = new Panel { Dock = DockStyle.Right, Width = 1, BackColor = Border };
-        rail.Controls.Add(railRule);
-        var navFlow = new FlowLayoutPanel { Dock = DockStyle.Top, FlowDirection = FlowDirection.TopDown, WrapContents = false, AutoSize = true, BackColor = Canvas };
-        rail.Controls.Add(navFlow);
-        AddNav(navFlow, "nav.live", "01", () => ShowPage(0));
-        AddNav(navFlow, "nav.setup", "02", () => ShowPage(1));
-        AddNav(navFlow, "nav.inputs", "03", () => ShowPage(2));
-        AddNav(navFlow, "nav.dev", "04", () => ShowPage(3));
-        var footer = new Label { Text = "V1.0.1  /  WINDOWS X64", ForeColor = Muted, Font = new Font("Segoe UI", 7.5F, FontStyle.Bold), AutoSize = true, Dock = DockStyle.Bottom, Padding = new Padding(0, 0, 0, 12) };
-        rail.Controls.Add(footer);
+        BuildDashboardLeft(left);
+        BuildDashboardRight(right);
 
-        pageHost.Dock = DockStyle.Fill;
-        pageHost.BackColor = Canvas;
-        pageHost.Padding = new Padding(14, 8, 0, 0);
-        body.Controls.Add(pageHost, 1, 0);
+        var footer = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.LeftToRight, WrapContents = false, BackColor = Canvas, Padding = new Padding(0, 5, 0, 0) };
+        root.Controls.Add(footer, 0, 2);
+        footer.Controls.Add(new Label { Text = "MADE BY TIMEXO", AutoSize = true, ForeColor = Muted, Font = new Font("Segoe UI", 8F, FontStyle.Bold), Margin = new Padding(0, 5, 16, 0) });
+        AddDonationLink(footer, "PayPal", "https://www.paypal.com/donate/?hosted_button_id=38GT8LH75W4GU");
+        AddDonationLink(footer, "Buy me a coffee", "https://timexo.gumroad.com/coffee");
+        var build = new Label { Text = "SHIFTRACKER  1.1.0  ·  WINDOWS X64", AutoSize = true, ForeColor = Muted, Font = new Font("Segoe UI", 7.5F, FontStyle.Bold), Margin = new Padding(12, 6, 0, 0) };
+        footer.Controls.Add(build);
+    }
 
-        BuildMonitorPage();
-        BuildSetupPage();
-        BuildInputsPage();
-        BuildDiagnosticsPage();
-        ShowPage(0);
+    private void BuildDashboardLeft(FlowLayoutPanel left)
+    {
+        int width = 590;
+        var current = NewCard(); current.Size = new Size(width, 158); current.Margin = new Padding(0, 0, 0, 9); left.Controls.Add(current);
+        current.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(15, 11), Font = new Font("Segoe UI", 8F, FontStyle.Bold), ForeColor = Muted }, "monitor.current"));
+        currentGearLabel.Text = "—"; currentGearLabel.SetBounds(18, 35, 125, 68); currentGearLabel.Font = new Font("Segoe UI", 43F, FontStyle.Bold); currentGearLabel.ForeColor = Teal; current.Controls.Add(currentGearLabel);
+        trackerStatus.SetBounds(18, 120, 280, 20); trackerStatus.Font = new Font("Segoe UI", 8F, FontStyle.Bold); trackerStatus.ForeColor = Muted; current.Controls.Add(trackerStatus);
+        patternView = new GearPatternView { BackColor = Card, MinimumSize = new Size(235, 120) };
+        patternView.SetBounds(310, 12, 265, 134); patternView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right; current.Controls.Add(patternView);
+        current.Resize += (_, _) => patternView.SetBounds(310, 12, Math.Max(220, current.ClientSize.Width - 322), Math.Max(112, current.ClientSize.Height - 24));
+        armButton.SetBounds(154, 54, 138, 34); StyleButton(armButton, true); armButton.Click += (_, _) => ToggleArmed(); current.Controls.Add(armButton);
+
+        var calibration = NewCard(); calibration.Size = new Size(width, 177); calibration.Margin = new Padding(0, 0, 0, 9); left.Controls.Add(calibration);
+        calibration.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(14, 10), Font = new Font("Segoe UI", 9F, FontStyle.Bold), ForeColor = Ink }, "setup.calibration"));
+        var clearCalibration = MakeButton("setup.clear", ClearCalibration, false); clearCalibration.SetBounds(width - 148, 5, 132, 27); calibration.Controls.Add(clearCalibration);
+        markerModeHint.AutoSize = false; markerModeHint.Size = new Size(width - 28, 34); markerModeHint.Location = new Point(14, 34); markerModeHint.Font = new Font("Segoe UI", 7.5F); markerModeHint.ForeColor = Muted; calibration.Controls.Add(markerModeHint);
+        calibrationProgress.SetBounds(14, 69, width - 30, 20); calibrationProgress.ForeColor = Teal; calibrationProgress.Font = new Font("Segoe UI", 8F, FontStyle.Bold); calibration.Controls.Add(calibrationProgress);
+        calibrationButtons.Location = new Point(8, 91); calibrationButtons.Size = new Size(width - 18, 72); calibrationButtons.FlowDirection = FlowDirection.LeftToRight; calibrationButtons.WrapContents = true; calibrationButtons.BackColor = Card; calibration.Controls.Add(calibrationButtons);
+        BuildCalibrationButtons();
+
+        var output = NewCard(); output.Size = new Size(width, 100); output.Margin = new Padding(0, 0, 0, 9); left.Controls.Add(output);
+        output.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(14, 10), Font = new Font("Segoe UI", 8F, FontStyle.Bold), ForeColor = Ink }, "inputs.output"));
+        StyleCombo(outputSelect); outputSelect.DropDownStyle = ComboBoxStyle.DropDownList; outputSelect.SetBounds(14, 38, 310, 30); output.Controls.Add(outputSelect);
+        PopulateOutputCombo();
+        startOutputButton.SetBounds(339, 37, 132, 32); StyleButton(startOutputButton, true);
+        startOutputButton.Click += async (_, _) => { if (OutputRunning) await StopOutputAsync(); else await StartOutputAsync(); };
+        output.Controls.Add(startOutputButton);
+        outputStatus.SetBounds(14, 72, width - 28, 20); outputStatus.ForeColor = Teal; outputStatus.Font = new Font("Segoe UI", 8F, FontStyle.Bold); output.Controls.Add(outputStatus);
+        outputSelect.SelectedIndexChanged += (_, _) =>
+        {
+            if (suppressUiEvents || outputSelect.SelectedIndex < 0) return;
+            selectedOutput = outputSelect.SelectedIndex switch { 1 => "vjoy", 2 => "xbox", _ => "keyboard" };
+            armed = false; ReleaseOutputs(); outputReady = false;
+            vJoyOutput?.Dispose(); vJoyOutput = null; gamepadOutput?.Dispose(); gamepadOutput = null;
+            SaveSettings(); RefreshOutputUi(); SetStatus("status.paused", false);
+        };
+
+        BuildDashboardBindings(left, width);
+        var options = NewCard(); options.Size = new Size(width, 92); options.Margin = new Padding(0, 0, 0, 9); left.Controls.Add(options);
+        options.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(14, 9), Font = new Font("Segoe UI", 8F, FontStyle.Bold), ForeColor = Muted }, "inputs.double"));
+        doublePressCheck.AutoSize = true; doublePressCheck.BackColor = Card; doublePressCheck.ForeColor = Ink; doublePressCheck.Location = new Point(14, 34); doublePressCheck.Checked = doublePressEnabled; options.Controls.Add(doublePressCheck);
+        options.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(330, 37), ForeColor = Muted }, "inputs.gap"));
+        doublePressGap.Minimum = 20; doublePressGap.Maximum = 500; doublePressGap.Increment = 10; doublePressGap.Value = Math.Clamp(doublePressGapMs, 20, 500); doublePressGap.SetBounds(420, 32, 74, 27); doublePressGap.BackColor = Raised; doublePressGap.ForeColor = Ink; options.Controls.Add(doublePressGap);
+        doublePressCheck.CheckedChanged += (_, _) => { if (suppressUiEvents) return; doublePressEnabled = doublePressCheck.Checked; SaveSettings(); };
+        doublePressGap.ValueChanged += (_, _) => { doublePressGapMs = (int)doublePressGap.Value; SaveSettings(); };
+        options.Controls.Add(Bind(new Label { AutoSize = false, Size = new Size(width - 28, 26), Location = new Point(14, 63), ForeColor = Amber, Font = new Font("Segoe UI", 7F) }, "inputs.driverHelp"));
+    }
+
+    private void BuildDashboardBindings(FlowLayoutPanel left, int width)
+    {
+        keyMapPanel.Size = new Size(width, 214); keyMapPanel.BackColor = Card; keyMapPanel.Margin = new Padding(0, 0, 0, 9); left.Controls.Add(keyMapPanel);
+        keyMapPanel.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(14, 9), Font = new Font("Segoe UI", 8F, FontStyle.Bold), ForeColor = Ink }, "inputs.keyMap"));
+        keyMapPanel.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(14, 30), Font = new Font("Segoe UI", 7.5F), ForeColor = Muted }, "inputs.capture"));
+        for (int i = 0; i < AllStates.Length; i++)
+        {
+            string state = AllStates[i]; int x = 14 + (i % 3) * 188, y = 58 + (i / 3) * 45;
+            var label = new Label { Text = StateName(state), ForeColor = Ink, Font = new Font("Segoe UI", 8F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft, Location = new Point(x, y), Size = new Size(42, 27) };
+            var box = new TextBox { Text = keyAssignments[state], Location = new Point(x + 43, y), Size = new Size(112, 27), ReadOnly = true, BackColor = Raised, ForeColor = Teal, BorderStyle = BorderStyle.FixedSingle, TextAlign = HorizontalAlignment.Center, Cursor = Cursors.Hand, TabStop = true };
+            box.PreviewKeyDown += (_, e) => e.IsInputKey = true; box.Click += (_, _) => BeginKeyCapture(state, box); box.KeyDown += (_, e) => CaptureKey(state, box, e);
+            keyMapPanel.Controls.Add(label); keyMapPanel.Controls.Add(box); keyCaptions[state] = label; keyBoxes[state] = box;
+        }
+        keyCaptureHint.AutoSize = true; keyCaptureHint.ForeColor = Muted; keyCaptureHint.Location = new Point(14, 194); keyMapPanel.Controls.Add(keyCaptureHint);
+
+        padMapPanel.Size = new Size(width, 214); padMapPanel.BackColor = Card; padMapPanel.Margin = new Padding(0, 0, 0, 9); left.Controls.Add(padMapPanel);
+        padMapPanel.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(14, 9), Font = new Font("Segoe UI", 8F, FontStyle.Bold), ForeColor = Ink }, "inputs.padMap"));
+        padMapPanel.Controls.Add(Bind(new Label { AutoSize = false, Size = new Size(width - 28, 32), Location = new Point(14, 29), Font = new Font("Segoe UI", 7.5F), ForeColor = Muted }, "inputs.padHelp"));
+        for (int i = 0; i < AllStates.Length; i++)
+        {
+            string state = AllStates[i]; int x = 14 + (i % 3) * 188, y = 65 + (i / 3) * 42;
+            var label = new Label { Text = StateName(state), ForeColor = Ink, Font = new Font("Segoe UI", 8F, FontStyle.Bold), TextAlign = ContentAlignment.MiddleLeft, Location = new Point(x, y), Size = new Size(42, 27) };
+            var combo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Location = new Point(x + 43, y), Size = new Size(130, 27), BackColor = Raised, ForeColor = Ink, FlatStyle = FlatStyle.Flat };
+            foreach (var choice in PadChoices) combo.Items.Add(new PadChoice(choice.Id, choice.Short, choice.Button, choice.Hat));
+            SetComboSelection(combo, Array.FindIndex(PadChoices, p => p.Id == padAssignments[state]));
+            combo.SelectedIndexChanged += (_, _) => { if (combo.SelectedItem is PadChoice choice) { padAssignments[state] = choice.Id; SaveSettings(); } };
+            padMapPanel.Controls.Add(label); padMapPanel.Controls.Add(combo); padBoxes[state] = combo;
+        }
+        padMapPanel.Controls.Add(Bind(new Label { AutoSize = false, Size = new Size(width - 28, 20), Location = new Point(14, 194), ForeColor = Amber, Font = new Font("Segoe UI", 7F) }, "inputs.vjoyHelp"));
+    }
+
+    private void BuildDashboardRight(TableLayoutPanel right)
+    {
+        var camera = NewCard(); camera.Dock = DockStyle.Fill; camera.Margin = new Padding(0, 0, 0, 8); right.Controls.Add(camera, 0, 0);
+        camera.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(14, 10), Font = new Font("Segoe UI", 8F, FontStyle.Bold), ForeColor = Muted }, "monitor.live"));
+        cameraStatus.AutoSize = true; cameraStatus.ForeColor = Amber; cameraStatus.Font = new Font("Segoe UI", 8F, FontStyle.Bold); cameraStatus.Anchor = AnchorStyles.Top | AnchorStyles.Right; camera.Controls.Add(cameraStatus);
+        preview.SizeMode = PictureBoxSizeMode.Zoom; preview.BackColor = Color.FromArgb(9, 11, 13); preview.Cursor = Cursors.Cross; preview.Click += PreviewClick; camera.Controls.Add(preview);
+        camera.Resize += (_, _) => { preview.SetBounds(12, 35, Math.Max(160, camera.ClientSize.Width - 24), Math.Max(100, camera.ClientSize.Height - 47)); cameraStatus.Left = Math.Max(160, camera.ClientSize.Width - cameraStatus.Width - 14); cameraStatus.Top = 11; };
+
+        var settings = NewCard(); settings.Dock = DockStyle.Fill; settings.Margin = new Padding(0, 0, 0, 8); right.Controls.Add(settings, 0, 1);
+        settings.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(14, 9), Font = new Font("Segoe UI", 8F, FontStyle.Bold), ForeColor = Ink }, "setup.cameraSettings"));
+        cameraSelect.DropDownStyle = ComboBoxStyle.DropDownList; StyleCombo(cameraSelect); cameraSelect.SetBounds(14, 35, 275, 27); settings.Controls.Add(cameraSelect);
+        var scan = MakeButton("camera.scan", () => { _ = ScanCamerasAsync(true); }, false); scan.SetBounds(296, 33, 112, 31); settings.Controls.Add(scan);
+        var connect = MakeButton("camera.connect", ConnectCamera, true); connect.SetBounds(415, 33, 112, 31); settings.Controls.Add(connect);
+        cameraSelect.SelectedIndexChanged += (_, _) => { if (cameraSelect.SelectedItem is CameraItem item) selectedCamera = item.Index; };
+        AddComboField(settings, "setup.view", viewSelect, 14, 72, 145, ["setup.top", "setup.bottom"]);
+        AddComboField(settings, "setup.rotation", rotationSelect, 164, 72, 130, ["setup.rotate0", "setup.rotate90", "setup.rotate180", "setup.rotate270"]);
+        AddComboField(settings, "setup.tracking", trackingSelect, 304, 72, 150, ["setup.markerMode", "setup.imageMode"]);
+        AddComboField(settings, "setup.engine", alignmentSelect, 462, 72, 150, ["setup.legacy", "setup.adaptive", "setup.knobV3"]);
+        AddComboField(settings, "setup.version", versionSelect, 14, 133, 180, ["setup.v1", "setup.v2"]);
+        mirrorH.AutoSize = true; mirrorH.BackColor = Card; mirrorH.ForeColor = Ink; mirrorH.SetBounds(208, 153, 164, 22); Bind(mirrorH, "setup.mirrorH"); settings.Controls.Add(mirrorH);
+        mirrorV.AutoSize = true; mirrorV.BackColor = Card; mirrorV.ForeColor = Ink; mirrorV.SetBounds(384, 153, 164, 22); Bind(mirrorV, "setup.mirrorV"); settings.Controls.Add(mirrorV);
+
+        SetComboSelection(viewSelect, selectedViewIndex); SetComboSelection(rotationSelect, selectedRotation);
+        SetComboSelection(trackingSelect, selectedTrackingIndex); SetComboSelection(alignmentSelect, selectedTrackingEngine);
+        SetComboSelection(versionSelect, selectedVersion2 ? 1 : 0); mirrorH.Checked = selectedMirrorH; mirrorV.Checked = selectedMirrorV;
+        trackingSelect.Enabled = selectedTrackingEngine != 2;
+        viewSelect.SelectedIndexChanged += (_, _) => { if (suppressUiEvents || viewSelect.SelectedIndex < 0) return; selectedViewIndex = viewSelect.SelectedIndex; InvalidateCalibration("Camera perspective changed", "Kameraperspektive geändert"); };
+        rotationSelect.SelectedIndexChanged += (_, _) => { if (suppressUiEvents || rotationSelect.SelectedIndex < 0) return; selectedRotation = rotationSelect.SelectedIndex; InvalidateCalibration("Image rotation changed", "Bilddrehung geändert"); };
+        trackingSelect.SelectedIndexChanged += (_, _) => { if (suppressUiEvents || trackingSelect.SelectedIndex < 0) return; selectedTrackingIndex = trackingSelect.SelectedIndex; InvalidateCalibration("Recognition method changed", "Erkennungsmethode geändert"); RefreshSetupStatus(); };
+        alignmentSelect.SelectedIndexChanged += (_, _) =>
+        {
+            if (suppressUiEvents || alignmentSelect.SelectedIndex < 0) return;
+            selectedTrackingEngine = alignmentSelect.SelectedIndex; adaptiveAlignment = selectedTrackingEngine == 1;
+            trackingSelect.Enabled = selectedTrackingEngine != 2;
+            frameTimer.Interval = selectedVersion2 || selectedTrackingEngine == 2 ? 16 : 33;
+            ApplyCameraProfile();
+            armed = false; ReleaseOutputs(); knobTracker.Reset();
+            if (selectedTrackingEngine != 1) { motionCompensator.Reset(); alignmentAnchorBase64 = null; }
+            InvalidateCalibration("Tracking engine changed", "Tracking-Verfahren geändert");
+        };
+        versionSelect.SelectedIndexChanged += (_, _) => ChangeProtocol();
+        mirrorH.CheckedChanged += (_, _) => { if (suppressUiEvents) return; selectedMirrorH = mirrorH.Checked; InvalidateCalibration("Horizontal mirror changed", "Horizontale Spiegelung geändert"); };
+        mirrorV.CheckedChanged += (_, _) => { if (suppressUiEvents) return; selectedMirrorV = mirrorV.Checked; InvalidateCalibration("Vertical mirror changed", "Vertikale Spiegelung geändert"); };
+
+        var logs = NewCard(); logs.Dock = DockStyle.Fill; right.Controls.Add(logs, 0, 2);
+        logs.Controls.Add(Bind(new Label { AutoSize = true, Location = new Point(13, 8), Font = new Font("Segoe UI", 8F, FontStyle.Bold), ForeColor = Ink }, "diag.log"));
+        var clear = MakeButton("diag.clear", () => logBox.Clear(), false); clear.SetBounds(680, 4, 94, 27); logs.Controls.Add(clear);
+        var copy = MakeButton("diag.copy", () => { if (!string.IsNullOrWhiteSpace(logBox.Text)) Clipboard.SetText(logBox.Text); }, false); copy.SetBounds(578, 4, 94, 27); logs.Controls.Add(copy);
+        logBox.Multiline = true; logBox.ReadOnly = true; logBox.ScrollBars = ScrollBars.Vertical; logBox.BackColor = Color.FromArgb(16, 18, 21); logBox.ForeColor = Color.FromArgb(196, 206, 212); logBox.Font = new Font("Cascadia Mono", 8F); logBox.BorderStyle = BorderStyle.None; logBox.SetBounds(12, 34, 760, 105); logBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right; logs.Controls.Add(logBox);
+        logs.Resize += (_, _) => { logBox.SetBounds(12, 34, Math.Max(120, logs.ClientSize.Width - 24), Math.Max(48, logs.ClientSize.Height - 45)); clear.Left = logs.ClientSize.Width - clear.Width - 10; copy.Left = clear.Left - copy.Width - 7; };
+    }
+
+    private void AddDonationLink(FlowLayoutPanel parent, string text, string url)
+    {
+        var link = new LinkLabel { Text = text, AutoSize = true, LinkColor = Teal, ActiveLinkColor = Amber, VisitedLinkColor = Teal, Font = new Font("Segoe UI", 8F, FontStyle.Bold), Margin = new Padding(0, 5, 18, 0) };
+        link.Click += (_, _) => { try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); } catch (Exception ex) { Log(string.Format(T("log.error"), ex.Message)); } };
+        parent.Controls.Add(link);
     }
 
     private readonly List<Button> navButtons = [];
@@ -754,7 +882,7 @@ public sealed class MainForm : Form
         if (viewSelect.Tag is string[] viewKeys) PopulateCombo(viewSelect, viewKeys, selectedViewIndex);
         if (rotationSelect.Tag is string[] rotationKeys) PopulateCombo(rotationSelect, rotationKeys, selectedRotation);
         if (trackingSelect.Tag is string[] trackingKeys) PopulateCombo(trackingSelect, trackingKeys, selectedTrackingIndex);
-        if (alignmentSelect.Tag is string[] engineKeys) PopulateCombo(alignmentSelect, engineKeys, adaptiveAlignment ? 1 : 0);
+        if (alignmentSelect.Tag is string[] engineKeys) PopulateCombo(alignmentSelect, engineKeys, selectedTrackingEngine);
         if (versionSelect.Tag is string[] versionKeys) PopulateCombo(versionSelect, versionKeys, selectedVersion2 ? 1 : 0);
         PopulateOutputCombo();
         SetComboSelection(languageSelect, language == "de" ? 1 : 0);
@@ -819,7 +947,7 @@ public sealed class MainForm : Form
 
     private void RefreshSetupStatus()
     {
-        markerModeHint.Text = selectedTrackingIndex == 0 ? T("setup.markerHint") : string.Empty;
+        markerModeHint.Text = selectedTrackingEngine == 2 ? T("setup.knobHint") : selectedTrackingIndex == 0 ? T("setup.markerHint") : string.Empty;
         int learned = CurrentLearnedStates().Count;
         calibrationProgress.Text = $"{learned}/{ActiveStates.Length} {T("setup.progress")}";
     }
@@ -827,8 +955,10 @@ public sealed class MainForm : Form
     private void UpdateDynamicLabels()
     {
         if (trackerStatus.IsHandleCreated)
-            trackerStatus.Text = candidateGear is null ? T("monitor.notDetected") :
-                (selectedTrackingIndex == 0 ? T("monitor.marker") : T("monitor.image")) + " · " + StateName(candidateGear);
+            trackerStatus.Text = selectedTrackingEngine == 2
+                ? (knobTracker.IsInitialized ? $"V3 · {knobTracker.FeatureCount} knob features" : T("monitor.notDetected"))
+                : candidateGear is null ? T("monitor.notDetected") :
+                    (selectedTrackingIndex == 0 ? T("monitor.marker") : T("monitor.image")) + " · " + StateName(candidateGear);
         if (currentGearLabel.IsHandleCreated) currentGearLabel.Text = activeGear is null ? "—" : StateName(activeGear);
         if (patternView is not null) { patternView.SetActive(activeGear); patternView.Invalidate(); }
         if (armButton.IsHandleCreated) armButton.Text = armed ? T("monitor.pause") : T("monitor.arm");
@@ -839,7 +969,7 @@ public sealed class MainForm : Form
     {
         if (suppressUiEvents) return;
         selectedVersion2 = versionSelect.SelectedIndex == 1;
-        frameTimer.Interval = selectedVersion2 ? 16 : 33;
+        frameTimer.Interval = selectedVersion2 || selectedTrackingEngine == 2 ? 16 : 33;
         armed = false; ReleaseOutputs();
         activeGear = candidateGear = lastConfirmedGear = null;
         selectedCandidate = "—"; v2NeutralSent.Clear(); v2OutputQueue.Clear();
@@ -856,7 +986,7 @@ public sealed class MainForm : Form
             bool learned = CurrentLearnedStates().Contains(state);
             var button = new Button
             {
-                Text = T("setup.learn") + " " + StateName(state), Width = 122, Height = 28,
+                Text = T("setup.learn") + " " + StateName(state), Width = 105, Height = 27,
                 Margin = new Padding(4), BackColor = learned ? Color.FromArgb(37, 69, 68) : Raised,
                 ForeColor = learned ? Teal : Ink, FlatStyle = FlatStyle.Flat,
                 Font = new Font("Segoe UI", 8F, FontStyle.Bold), Cursor = Cursors.Hand
@@ -869,7 +999,7 @@ public sealed class MainForm : Form
     }
 
     private string[] ActiveStates => selectedVersion2 ? V2States : V1States;
-    private bool UsesImageMatching => selectedTrackingIndex == 1;
+    private bool UsesImageMatching => selectedTrackingIndex == 1 && selectedTrackingEngine != 2;
     private bool UsesVJoy => selectedOutput == "vjoy";
     private bool UsesVirtualGamepad => selectedOutput == "xbox";
 
@@ -1024,19 +1154,33 @@ public sealed class MainForm : Form
         if (capture is null || !capture.IsOpened()) return;
         capture.Set(VideoCaptureProperties.FrameWidth, 640);
         capture.Set(VideoCaptureProperties.FrameHeight, 480);
-        capture.Set(VideoCaptureProperties.Fps, selectedVersion2 ? 60 : 30);
+        capture.Set(VideoCaptureProperties.Fps, selectedVersion2 || selectedTrackingEngine == 2 ? 60 : 30);
         capture.Set(VideoCaptureProperties.BufferSize, 1);
     }
 
     private void PreviewClick(object? sender, EventArgs e)
     {
-        if (lastFrame is null || preview.Image is null || selectedTrackingIndex != 0) return;
+        if (lastFrame is null || preview.Image is null) return;
         var mouse = preview.PointToClient(Cursor.Position);
         double scale = Math.Min((double)preview.ClientSize.Width / lastFrame.Width, (double)preview.ClientSize.Height / lastFrame.Height);
         double dx = (preview.ClientSize.Width - lastFrame.Width * scale) / 2;
         double dy = (preview.ClientSize.Height - lastFrame.Height * scale) / 2;
         int x = (int)((mouse.X - dx) / scale), y = (int)((mouse.Y - dy) / scale);
         if (x < 0 || y < 0 || x >= lastFrame.Width || y >= lastFrame.Height) return;
+        if (selectedTrackingEngine == 2)
+        {
+            if (!knobTracker.Initialize(lastFrame, new Point2f(x, y)))
+            {
+                Log(knobTracker.Status);
+                SetStatus("status.needCalibration", false);
+                return;
+            }
+            detected = (x / (double)lastFrame.Width, y / (double)lastFrame.Height);
+            Log(knobTracker.Status + " · teach each position with the buttons on the left.");
+            UpdateDynamicLabels(); SaveSettings();
+            return;
+        }
+        if (selectedTrackingIndex != 0) return;
         using var hsv = new Mat();
         Cv2.CvtColor(lastFrame, hsv, ColorConversionCodes.BGR2HSV);
         var px = hsv.At<Vec3b>(y, x);
@@ -1052,13 +1196,18 @@ public sealed class MainForm : Form
             MessageBox.Show(this, language == "de" ? "Verbinde zuerst die Kamera." : "Connect a camera first.", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
-        if (!UsesImageMatching && markerColor is null)
+        if (selectedTrackingEngine == 2 && !knobTracker.IsInitialized)
+        {
+            MessageBox.Show(this, T("setup.knobHint"), Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+        if (selectedTrackingEngine != 2 && !UsesImageMatching && markerColor is null)
         {
             MessageBox.Show(this, T("setup.markerHint"), Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
 
-        if (adaptiveAlignment && !motionCompensator.IsReady)
+        if (selectedTrackingEngine == 1 && !motionCompensator.IsReady)
         {
             bool hasOldCalibration = positions.Count > 0 || imageTemplates.Count > 0;
             if (hasOldCalibration)
@@ -1114,7 +1263,7 @@ public sealed class MainForm : Form
         try
         {
             if (lastFrame is null) return;
-            if (adaptiveAlignment && !motionCompensator.IsReady)
+            if (selectedTrackingEngine == 1 && !motionCompensator.IsReady)
             {
                 if (positions.Count > 0 || imageTemplates.Count > 0)
                 {
@@ -1155,12 +1304,12 @@ public sealed class MainForm : Form
     private void ClearCalibration()
     {
         var confirm = MessageBox.Show(this,
-            language == "de" ? "Alle Gangpositionen und die adaptive Kamerareferenz löschen?" : "Clear all learned gear positions and the adaptive camera reference?",
+            language == "de" ? "Alle eingelernten Gangpositionen und Tracking-Referenzen löschen?" : "Clear all learned gear positions and tracking references?",
             Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         if (confirm != DialogResult.Yes) return;
         armed = false; ReleaseOutputs();
         ClearLearnedPositions();
-        motionCompensator.Reset(); alignmentAnchorBase64 = null;
+        motionCompensator.Reset(); knobTracker.Reset(); alignmentAnchorBase64 = null;
         activeGear = candidateGear = lastConfirmedGear = null;
         SaveSettings(); RefreshVersionUi(); SetStatus("status.needCalibration", false);
         Log("Calibration cleared by user.");
@@ -1170,7 +1319,7 @@ public sealed class MainForm : Form
     {
         armed = false; ReleaseOutputs();
         ClearLearnedPositions();
-        motionCompensator.Reset(); alignmentAnchorBase64 = null;
+        motionCompensator.Reset(); knobTracker.Reset(); alignmentAnchorBase64 = null;
         activeGear = candidateGear = lastConfirmedGear = null;
         detected = null;
         currentGearLabel.Text = "—";
@@ -1198,13 +1347,11 @@ public sealed class MainForm : Form
             MessageBox.Show(this,
                 (language == "de" ? "Bitte zuerst alle aktiven Positionen einlernen: " : "Teach all active positions first: ") + string.Join(", ", missing.Select(StateName)),
                 Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            ShowPage(1);
             return;
         }
         if (!armed && !OutputRunning)
         {
-            MessageBox.Show(this, language == "de" ? "Starte zuerst die gewählte Ausgabe im Bereich Eingaben & Ausgabe." : "Start the selected output first on the Inputs & output page.", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            ShowPage(2);
+            MessageBox.Show(this, language == "de" ? "Starte zuerst die Ausgabe links auf diesem Bildschirm." : "Start the output first in the left column on this screen.", Text, MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
 
@@ -1261,6 +1408,11 @@ public sealed class MainForm : Form
 
         if (selectedOutput == "xbox")
         {
+            if (!hidMaestroV2MigrationAcknowledged)
+            {
+                var migrate = MessageBox.Show(this, T("inputs.driverMigrationConfirm"), Text, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (migrate != DialogResult.Yes) return;
+            }
             bool installed;
             try { installed = await Task.Run(HidMaestroGamepadOutput.IsDriverInstalled); }
             catch (Exception ex)
@@ -1289,6 +1441,11 @@ public sealed class MainForm : Form
                 gamepadOutput = await Task.Run(() => new HidMaestroGamepadOutput());
             }
             outputReady = true;
+            if (selectedOutput == "xbox" && !hidMaestroV2MigrationAcknowledged)
+            {
+                hidMaestroV2MigrationAcknowledged = true;
+                SaveSettings();
+            }
             RefreshOutputUi();
             Log(string.Format(T("log.outputStarted"), T(OutputModeKey())));
             SetStatus(selectedOutput == "xbox" ? "status.driverReady" : selectedOutput == "vjoy" ? "status.vjoyReady" : "status.ready", true);
@@ -1460,7 +1617,21 @@ public sealed class MainForm : Form
             bool alignmentOk = true;
             string alignmentMessage;
 
-            if (adaptiveAlignment && motionCompensator.IsReady)
+            if (selectedTrackingEngine == 2)
+            {
+                frame = transformed.Clone();
+                bool tracked = knobTracker.TryTrack(frame, out Point2f knob);
+                alignmentOk = tracked;
+                alignmentMessage = knobTracker.Status;
+                detected = tracked ? (knob.X / frame.Width, knob.Y / frame.Height) : null;
+                if (!tracked && lastAlignmentLogState != alignmentMessage)
+                {
+                    Log(alignmentMessage);
+                    lastAlignmentLogState = alignmentMessage;
+                }
+                else if (tracked) lastAlignmentLogState = null;
+            }
+            else if (selectedTrackingEngine == 1 && motionCompensator.IsReady)
             {
                 if (motionCompensator.TryAlign(transformed, out Mat? aligned, out alignmentMessage) && aligned is not null)
                     frame = aligned;
@@ -1478,8 +1649,8 @@ public sealed class MainForm : Form
             else
             {
                 frame = transformed.Clone();
-                alignmentMessage = adaptiveAlignment ? T("diag.noAnchor") : T("diag.legacy");
-                if (lastAlignmentLogState != alignmentMessage && adaptiveAlignment)
+                alignmentMessage = selectedTrackingEngine == 1 ? T("diag.noAnchor") : T("diag.legacy");
+                if (lastAlignmentLogState != alignmentMessage && selectedTrackingEngine == 1)
                 {
                     Log(T("diag.noAnchor"));
                     lastAlignmentLogState = alignmentMessage;
@@ -1488,7 +1659,11 @@ public sealed class MainForm : Form
 
             lastFrame?.Dispose();
             lastFrame = frame;
-            if (alignmentOk)
+            if (selectedTrackingEngine == 2)
+            {
+                UpdateShift(alignmentOk ? Classify(detected, frame) : null);
+            }
+            else if (alignmentOk)
             {
                 detected = UsesImageMatching ? null : TrackMarker(frame);
                 string? gear = Classify(detected, frame);
@@ -1539,7 +1714,7 @@ public sealed class MainForm : Form
         alignmentStatusText = text;
         alignmentStatusGood = good;
         alignmentValue.Refresh();
-        featureValue.Text = adaptiveAlignment && motionCompensator.IsReady
+        featureValue.Text = selectedTrackingEngine == 2 ? $"{knobTracker.FeatureCount} knob features" : selectedTrackingEngine == 1 && motionCompensator.IsReady
             ? $"{motionCompensator.LastInlierCount}/{motionCompensator.LastMatchCount} inliers · {motionCompensator.LastInlierRatio:P0}"
             : "—";
         candidateValue.Text = candidateGear is null ? "—" : StateName(candidateGear);
@@ -1577,8 +1752,8 @@ public sealed class MainForm : Form
                 g.DrawLine(pen, x, y - 18, x, y + 18);
             }
             string tag = alignmentOk
-                ? (adaptiveAlignment && motionCompensator.IsReady ? $"ALIGN  {motionCompensator.LastInlierCount} INLIERS" : "LEGACY / UNANCHORED")
-                : "ALIGNMENT LOST · SAFE HOLD";
+                ? selectedTrackingEngine == 2 ? $"V3 KNOB TRACK  {knobTracker.FeatureCount} FEATURES" : selectedTrackingEngine == 1 && motionCompensator.IsReady ? $"V2 ALIGN  {motionCompensator.LastInlierCount} INLIERS" : "V1 FIXED CAMERA"
+                : selectedTrackingEngine == 2 ? "KNOB TRACK LOST · SAFE HOLD" : "ALIGNMENT LOST · SAFE HOLD";
             var tagSize = g.MeasureString(tag, font);
             var box = new RectangleF(10, 10, tagSize.Width + 18, tagSize.Height + 10);
             using var fill = new SolidBrush(Color.FromArgb(205, 18, 22, 26));
@@ -1741,6 +1916,8 @@ public sealed class MainForm : Form
                 DoublePressGapMs = doublePressGap.IsHandleCreated ? (int)doublePressGap.Value : doublePressGapMs,
                 Version2 = selectedVersion2,
                 AdaptiveAlignment = adaptiveAlignment,
+                TrackingEngine = selectedTrackingEngine,
+                HidMaestroV2MigrationAcknowledged = hidMaestroV2MigrationAcknowledged,
                 AlignmentAnchor = alignmentAnchorBase64,
                 Language = language
             };
@@ -1787,11 +1964,12 @@ public sealed class MainForm : Form
                 "tastaturtasten" or "keyboard keys" => "keyboard",
                 "virtueller joystick (vjoy)" => "vjoy", _ => "keyboard"
             };
-            if (s.AdaptiveAlignment.HasValue) adaptiveAlignment = s.AdaptiveAlignment.Value;
-            else adaptiveAlignment = false; // Existing installs retain their fixed-camera behavior until opted in.
+            selectedTrackingEngine = s.TrackingEngine is >= 0 and <= 2 ? s.TrackingEngine.Value : s.AdaptiveAlignment == true ? 1 : 0;
+            hidMaestroV2MigrationAcknowledged = s.HidMaestroV2MigrationAcknowledged ?? false;
+            adaptiveAlignment = selectedTrackingEngine == 1;
             language = s.Language.Equals("de", StringComparison.OrdinalIgnoreCase) ? "de" : "en";
-            alignmentAnchorBase64 = s.AlignmentAnchor;
-            if (!string.IsNullOrWhiteSpace(alignmentAnchorBase64))
+            alignmentAnchorBase64 = selectedTrackingEngine == 1 ? s.AlignmentAnchor : null;
+            if (selectedTrackingEngine == 1 && !string.IsNullOrWhiteSpace(alignmentAnchorBase64))
             {
                 using var anchor = Cv2.ImDecode(Convert.FromBase64String(alignmentAnchorBase64), ImreadModes.Color);
                 if (!anchor.Empty() && motionCompensator.SetReference(anchor, out _)) { }
@@ -1816,6 +1994,7 @@ public sealed class MainForm : Form
         foreach (Mat template in imageTemplates.Values) template.Dispose();
         imageTemplates.Clear();
         motionCompensator.Dispose();
+        knobTracker.Dispose();
         preview.Image?.Dispose(); preview.Image = null;
         SaveSettings();
     }
@@ -1838,6 +2017,8 @@ public sealed class MainForm : Form
         public int DoublePressGapMs { get; set; } = 90;
         public bool? Version2 { get; set; }
         public bool? AdaptiveAlignment { get; set; }
+        public int? TrackingEngine { get; set; }
+        public bool? HidMaestroV2MigrationAcknowledged { get; set; }
         public string? AlignmentAnchor { get; set; }
         public string Language { get; set; } = "en";
     }

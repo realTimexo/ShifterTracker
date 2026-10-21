@@ -19,7 +19,7 @@ internal static class Program
                 ReportFailure("Unhandled process exception", eventArgs.ExceptionObject as Exception
                     ?? new Exception(eventArgs.ExceptionObject?.ToString() ?? "Unknown fatal exception."));
 
-            WriteDiagnostic("Starting ShifterTracker 1.0.1.");
+            WriteDiagnostic("Starting ShifterTracker 1.1.0.");
             ApplicationConfiguration.Initialize();
             bool startVirtualGamepad = args.Any(a =>
                 string.Equals(a, "--enable-virtual-gamepad", StringComparison.OrdinalIgnoreCase));
@@ -41,7 +41,7 @@ internal static class Program
                 "ShifterTracker could not continue. Details were saved to:\n" + DiagnosticLog +
                 "\n\nError: " + exception.Message +
                 "\n\nShifterTracker konnte nicht fortgesetzt werden. Details stehen in startup.log.",
-                "ShifterTracker 1.0.1",
+                "ShifterTracker 1.1.0",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }

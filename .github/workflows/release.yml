@@ -15,6 +15,14 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+      - name: Validate tag matches project version
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          $tagVersion = [regex]::Match($env:GITHUB_REF_NAME, '^v(?<version>\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)$').Groups['version'].Value
+          if (-not $tagVersion) { throw "Unsupported release tag: $env:GITHUB_REF_NAME" }
+          $projectVersion = [regex]::Match((Get-Content 'src/ShiftTracker/ShiftTracker.csproj' -Raw), '<Version>([^<]+)</Version>').Groups[1].Value
+          if ($tagVersion -ne $projectVersion) { throw "Tag version $tagVersion does not match project version $projectVersion." }
       - name: Set up .NET 10
         uses: actions/setup-dotnet@v4
         with:
@@ -28,9 +36,16 @@ jobs:
         with:
           generate_release_notes: true
           overwrite_files: true
-          prerelease: ${{ contains(github.ref, '-alpha') || contains(github.ref, '-beta') }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
           files: |
             artifacts/ShiftTracker-v*-win-x64.exe
             artifacts/ShiftTracker-v*-win-x64.exe.sha256
             artifacts/ShiftTracker-v*-win-x64.zip
             artifacts/ShiftTracker-v*-win-x64.zip.sha256
+            artifacts/ShiftTracker-v*-HIDMaestro-LICENSE.txt
+            artifacts/ShiftTracker-v*-HIDMaestro-THIRD-PARTY-NOTICES.txt
+            artifacts/ShiftTracker-v*-ShifterTracker-LICENSE.txt
+            artifacts/ShiftTracker-v*-DOTNET-LICENSE.txt
+            artifacts/ShiftTracker-v*-DOTNET-THIRD-PARTY-NOTICES.txt
+            artifacts/ShiftTracker-v*-Apache-2.0.txt
+            artifacts/ShiftTracker-v*-THIRD-PARTY.md

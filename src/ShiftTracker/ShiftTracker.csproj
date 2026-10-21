@@ -13,10 +13,10 @@
     <Product>ShifterTracker</Product>
     <Description>Camera-driven H-pattern shifter tracking with keyboard and virtual gamepad output.</Description>
     <RootNamespace>ShiftTracker</RootNamespace>
-    <Version>1.0.1</Version>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
-    <InformationalVersion>1.0.1</InformationalVersion>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <InformationalVersion>1.1.0</InformationalVersion>
     <PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
   <ItemGroup>
@@ -27,14 +27,6 @@
   <ItemGroup>
     <Reference Include="HIDMaestro.Core">
       <HintPath>ThirdParty/HIDMaestro.Core.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-    <Reference Include="Microsoft.Windows.SDK.NET">
-      <HintPath>ThirdParty/Microsoft.Windows.SDK.NET.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-    <Reference Include="WinRT.Runtime">
-      <HintPath>ThirdParty/WinRT.Runtime.dll</HintPath>
       <Private>true</Private>
     </Reference>
   </ItemGroup>

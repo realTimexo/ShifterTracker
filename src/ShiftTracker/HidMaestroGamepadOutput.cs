@@ -25,11 +25,10 @@ internal sealed class HidMaestroGamepadOutput : IDisposable
         try
         {
             context.LoadDefaultProfiles();
-            // Reuse an existing driver. InstallDriver() is intentionally not
-            // called when one is present because the upstream installer sweeps
-            // its virtual devices before a full driver deployment.
-            if (!context.IsDriverInstalled)
-                context.InstallDriver();
+            // v2's InstallDriver is idempotent when this build's driver is
+            // current, and performs the required one-time migration when a
+            // machine still has the earlier v1 driver installed.
+            context.InstallDriver();
 
             HMProfile profile = context.GetProfile("xbox-360-wired")
                 ?? throw new InvalidOperationException("The bundled Xbox 360 profile is missing.");

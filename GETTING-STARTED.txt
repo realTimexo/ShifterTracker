@@ -1,19 +1,21 @@
-ShifterTracker 1.0.1 — Quick start
+ShifterTracker 1.1.0 — Quick start
 
-1. Extract the ZIP and run ShiftTracker.exe.
-2. Open Setup & Tracking, select your camera, and press Connect.
-3. Choose Bottom-up for the supplied camera angle. Adjust rotate/mirror if needed.
-4. Select V2 and Adaptive alignment. Keep the camera still while the first adaptive reference is captured.
-5. Capture each displayed state with the shifter in that position: 1–5, R, N-L, N and N-R.
-6. Open Inputs & Output and choose:
-   - Keyboard: click each field and press a key. No driver is needed.
-   - Virtual Xbox 360 gamepad: click Start output. ShifterTracker asks to relaunch elevated; approve UAC if you want to continue. On first use, the elevated app separately asks before installing its bundled virtual-HID driver and signing certificate. Driver installation is one-time, but UAC may appear each time you start virtual-gamepad mode.
-   - vJoy: use only if vJoy is already installed and configured.
-7. Bind each selected key or gamepad input to the matching gear action in BeamNG. ShifterTracker does not change BeamNG controls automatically.
-8. Return to Live View, check the detected state and highlighted H-pattern position, then press Arm detection.
+1. Extract the ZIP and run ShiftTracker.exe. No Python or separate .NET runtime is needed.
+2. Under CAMERA SETTINGS, scan for the camera and press Connect. Select the correct perspective, rotate/mirror the preview as needed.
+3. Choose V3 · track the knob. Click the center of the visible knob in the live preview. After a restart, click once again to initialize this session's optical-flow track.
+4. Move the lever to each displayed position and click its Capture button on the left. For V2 shift protocol, teach N-L, N and N-R too. Use the calibration progress count to check all required positions.
+5. Choose Keyboard, Built-in virtual Xbox gamepad, or vJoy under Output. Select each state's binding, then press Start output and Arm detection.
+6. Bind those same keys/buttons to the corresponding gear actions in BeamNG. ShifterTracker does not edit BeamNG's control setup.
+7. Check the current-position indicator, H-pattern highlight and compact developer log while stationary before using the shifter in a game.
 
-If the adaptive alignment confidence drops, stop and reposition the camera so the fixed outer housing is visible. Recalibrate after changing camera angle, rotation, mirror, or tracking method.
+Tracker choices are independent of shift protocol. V1 is the fixed-camera tracker. V2 aligns the whole frame from stable outer-housing features. V3 tracks features on the knob itself with optical flow; it does not stabilize the background or compare per-gear pictures. A small camera shift may be tolerated, but changes of view still require recalibration. If V3 loses the knob, click its center in the live preview to reacquire it.
 
-Test in a stationary vehicle before driving. The virtual Xbox mode installs a Windows virtual-HID driver only after it is explicitly selected and confirmed; Windows administrator approval is required. Keyboard mode does not install a driver.
+The built-in virtual gamepad requires Windows administrator approval. HIDMaestro 2.0.0 may update an older virtual-device driver once after upgrading from 1.x. Exit older ShifterTracker versions before starting the new virtual-gamepad mode, read the in-app notice, then decide whether to approve Windows prompts. Keyboard output does not install a driver. vJoy must be installed and configured separately.
 
-If the app still cannot start, check `%LOCALAPPDATA%\ShifterTracker\startup.log` and include it when reporting the problem.
+Settings and learned gear coordinates are saved in %LOCALAPPDATA%\ShifterTracker\settings.json. Startup diagnostics are saved in %LOCALAPPDATA%\ShifterTracker\startup.log.
+
+Test in a stationary vehicle first. ShifterTracker is an input prototype, not safety-critical control software.
+
+Made by Timexo
+https://www.paypal.com/donate/?hosted_button_id=38GT8LH75W4GU
+https://timexo.gumroad.com/coffee

@@ -1,94 +1,85 @@
 # ShifterTracker
 
-A native Windows camera-to-input app for a 3D-printed H-pattern shifter. The live view shows the recognized position, the H-pattern diagram highlights it, and the selected game input is updated when the lever moves.
+A Windows camera-to-input app for a 3D-printed H-pattern shifter. It tracks the physical knob, displays the active gate, and sends keyboard or controller inputs to games such as BeamNG.drive.
 
-**Current release: 1.0.1** · Windows 10/11 x64 · .NET 10 self-contained single-file executable
+**Current release: 1.1.0** · Windows 10/11 x64 · self-contained single-file app · English and German UI
 
-## What's new in 1.0.1
+## Download
 
-- The main window appears before camera discovery starts; the DirectShow scan now runs in a background STA thread instead of blocking startup.
-- Startup and unhandled errors now show a message and write details to `%LOCALAPPDATA%\ShifterTracker\startup.log`.
-- Fix startup selection of the output mode, which was previously set before its options were populated; all ComboBox selection writes now clamp to the available entries and safely allow an empty list.
+Download the current release from [GitHub Releases](https://github.com/realTimexo/ShifterTracker/releases):
 
-## Features first released in 1.0.0
+- **`ShiftTracker-v1.1.0-win-x64.exe`** is the standalone app; no separate Python or .NET runtime is needed.
+- **`ShiftTracker-v1.1.0-win-x64.zip`** includes the app, quick-start, changelog and license notices.
+- The release also attaches ShifterTracker's MIT license, the HIDMaestro and .NET licenses and third-party notices, the Apache-2.0 license and a consolidated third-party summary as separate assets, including for people who download only the EXE.
+- Check the matching `.sha256` files to verify downloads.
 
-- **Adaptive V2 tracking:** recognizes fixed features on the outer shifter housing, estimates small camera translation/rotation/scale changes every frame with ORB feature matching and a RANSAC similarity transform, then aligns the frame to the saved calibration reference before classifying the lever.
-- **Fail-safe behavior:** if the background alignment is ambiguous or outside its supported range, the frame is rejected and the last output is held; it does not guess a different gear.
-- **Structured interface:** Live View, Setup & Tracking, Inputs & Output, and Diagnostics are separate sections. English is the default; German is available in the language selector.
-- **Three output choices:** keyboard simulation, optional vJoy/DirectInput, and a built-in Xbox 360-compatible virtual gamepad.
-- V1 fixed-camera protocol remains available. V2 teaches the brief neutral-left, neutral-middle, and neutral-right gates and sends them in order during lane changes.
+## What's new in 1.1.0
 
-## Download and run
+- **One-screen dashboard:** live camera preview and camera controls stay on the right; current position, H-pattern, calibration buttons, output mode and gear bindings stay on the left. A compact developer log is always visible. The language control switches between English and German.
+- **New V3 knob tracker:** click the knob once in the live view. V3 tracks sparse surface features on the knob itself with fast pyramidal Lucas–Kanade optical flow. It does **not** realign the complete camera image or compare stored pictures of each gear. The detected knob center is classified against the learned position coordinates. Small camera shifts can be tolerated while the knob stays visible; a large viewpoint change still needs recalibration.
+- **V1 and V2 remain available:** V1 is the fixed-camera path; V2 keeps the previous background-feature alignment method. Tracking engine (V1/V2/V3) and V1/V2 shift-output protocol are separate choices.
+- **HIDMaestro v2.0.0:** the optional built-in virtual Xbox 360-compatible gamepad now uses the upstream 2.0.0 SDK and current driver migration path. The release builder pins and verifies the upstream archive by SHA-256.
+- **License distribution:** ShifterTracker, HIDMaestro v2.0.0, .NET and Apache license material is provided in the ZIP and as separate release downloads beside the standalone EXE asset.
 
-1. Download `ShiftTracker-v1.0.1-win-x64.exe` for the direct single-file app, or `ShiftTracker-v1.0.1-win-x64.zip` for the app plus quick-start and license notices, from the [GitHub Releases page](https://github.com/realTimexo/ShifterTracker/releases).
-2. Extract it and run `ShiftTracker.exe`. No Python or separately installed .NET runtime is needed.
-3. In **Setup & Tracking**, select and connect the camera. The initial view is **Bottom-up (reference photos)**; adjust rotation or mirroring if needed.
-4. Select **Adaptive V2** (recommended), then choose **Image matching** for marker-free tracking or **Color marker** if a high-contrast marker is fitted.
-5. Capture every position shown in the calibration card. The first adaptive capture stores a fixed-background reference; keep the shifter frame still while the reference is made. V2 includes **N-L**, **N**, and **N-R**.
-6. In **Inputs & Output**, select an output and configure its bindings. Start the output, then return to Live View and click **Arm detection**.
-7. Bind the chosen keyboard keys or gamepad buttons to the corresponding gear actions in BeamNG once. ShifterTracker does not change BeamNG's control configuration for you.
+## First setup
 
-Settings, camera choice, calibration images, language and mappings are stored locally in `%LOCALAPPDATA%\ShifterTracker\settings.json`.
+1. Extract the ZIP (or run the standalone EXE). Exit older ShifterTracker versions before selecting virtual-gamepad output.
+2. In **Camera settings**, scan for and connect the camera. Choose the camera perspective, rotation and mirroring that match the live view.
+3. Select **V3 · track the knob**. With the knob sharply visible, click its center in the live camera preview. The preview shows its tracked center and feature count. Repeat the click if the track is lost.
+4. Move the lever to every position shown under **Teach positions** and click its capture button. In V2 shift protocol, teach N-L, N and N-R as well as 1–5 and R. The gear coordinates and other settings are saved locally; the live optical-flow anchor must be clicked again after each app launch.
+5. Choose keyboard, virtual Xbox gamepad or vJoy under **Output**. Configure the visible per-state bindings, start the output, then arm detection. Confirm the highlighted position and log events while the vehicle is stationary.
+6. Bind those same keys/buttons to the matching gear actions in BeamNG once. ShifterTracker does not change game controls automatically.
 
-If startup still fails, read `%LOCALAPPDATA%\ShifterTracker\startup.log` and include it in a bug report. Camera discovery runs after the window is displayed, so a slow camera should no longer make startup appear blank.
+V3 works best when the knob has visible texture, edges or other surface detail and remains in focus. If the tracker loses the knob during a very fast or blurred movement, click the knob again to reacquire and ensure all positions are still calibrated. A changed camera angle, resolution, rotation or mirror invalidates coordinate calibration. Validate with your own camera, hardware and lighting before driving; no camera tracker can guarantee perfect detection under every condition.
 
-## Tracking modes
+## Tracking engines and shift protocols
 
-### Adaptive V2 (recommended)
+The **tracking engine** selects how the camera finds the shifter position:
 
-The app extracts ORB features from the visible fixed outer housing, side rails and frame. It masks the central moving mechanism, finds correspondences to the calibration frame, rejects outliers with RANSAC, and applies the resulting small similarity transform before gear recognition. The reference is fixed rather than updated from frame to frame, avoiding cumulative drift. The alignment score, inlier count and live overlay are visible in Diagnostics and the camera preview.
+- **V1 — fixed camera:** the established marker or local gear-image method, without camera-motion correction.
+- **V2 — background alignment:** matches stable features on the outer housing, rejects outliers, aligns each frame to a fixed reference, then uses the existing marker or gear-position method. Use this only if you want its adaptive background alignment behavior.
+- **V3 — direct knob tracking:** sparse optical-flow features are initialized on the knob and followed locally. The scene background is not used for stabilization; no per-gear picture comparison is used in this mode. Click the knob in the preview after opening the app and teach the gear coordinates.
 
-This compensates for **small** changes in camera position and angle; it cannot recover an obstructed shifter, a very different viewpoint, severe blur, a featureless background or large camera displacement. If alignment is lost, stop the output, reposition the camera so the fixed housing is visible, and recalibrate. Tracking is tested against the six supplied shifter views with synthetic small translations, rotations and scale changes; validate it with your own camera, lighting and hardware before driving.
+The separate **shift protocol** controls how states are sent: V1 sends the direct gear state; V2 sends its ordered N-L/N/N-R lane route before the destination gear. Example: 1 → 2 sends N-L → N → 2; N → 5 sends N-R → 5. This is a short button sequence, not a physical analog H-shifter device.
 
-### V1 / Legacy
+V1/V2 can use **Color marker** or **Image matching**. Image matching is the earlier local gear-image method and is not used by V3. Camera perspective, rotation, mirroring or recognition changes require recalibration.
 
-V1 uses the established fixed-camera position/template matching behavior, without camera-motion correction. Use it if the camera mount is rigid and you prefer the previous protocol. It remains available in **Setup & Tracking**.
+## Output modes
 
-### Recognition type
+### Keyboard
 
-- **Image matching:** learn a small crop for each gear position; no sticker is required. The camera should be focused and lighting should remain reasonably consistent.
-- **Color marker:** click the marker in the live view to sample its color, then teach each position.
+Click each gear field and press the desired keyboard key. Defaults are F13–F19 for 1–5, R and N; F20/F21 are reserved for V2 N-L/N-R. V1 can optionally send a second quick tap for direct gear-to-gear shifts, with an adjustable interval. No virtual-controller driver is installed in keyboard mode.
 
-Changing the camera perspective, recognition method, rotation or mirroring clears the calibration, because the saved coordinates would no longer be valid.
+### Built-in virtual Xbox gamepad
 
-## Output options
-
-### Keyboard keys
-
-Captures real key presses: click a gear's field and press the desired key. Defaults are `F13`–`F19` for 1–5, R and N, with `F20`/`F21` reserved for V2 N-L/N-R. V1 has an optional second key tap for gear-to-gear changes; its interval is configurable. V2 uses its ordered neutral-gate sequence instead.
-
-### Built-in virtual Xbox 360 gamepad
-
-This exposes one held gamepad input for the active state, so BeamNG can bind the positions as controller inputs. The defaults use the four D-pad directions and face/shoulder buttons; they avoid Xbox Start/Back menu buttons. It uses the bundled HIDMaestro virtual-HID driver. When you start this output, ShifterTracker asks to relaunch elevated; approve Windows UAC if you want to continue. On the first use, the elevated app separately asks for consent before installing the bundled UMDF driver and local signing certificate. This driver installation is one-time (unless the driver is later updated). The tracker app itself is not installed as a separate program. If you do not want a driver or administrator prompt, choose keyboard output instead. No driver is installed merely by downloading or opening the app.
-
-**Security note:** review each prompt before accepting it. The optional driver installation changes Windows' local device/certificate state and is only requested when you explicitly start virtual-gamepad output. The virtual-gamepad session may require an elevated app and a UAC prompt each time you start it; the driver itself is not reinstalled each time.
+Each shifter state maps to a held gamepad input that can be bound in BeamNG. The output uses the bundled HIDMaestro 2.0.0 SDK. Windows administrator approval is required to create virtual devices. On the first post-upgrade use, HIDMaestro may need to update its driver; review the in-app confirmation and Windows prompts before accepting. The driver is handled by HIDMaestro, not silently installed when you download or open ShifterTracker. For v1-to-v2 driver migration, close the older ShifterTracker version first; upstream documents that a running 1.x HIDMaestro app can remove HIDMaestro devices while a 2.0.0 app is installing/updating the driver.
 
 ### vJoy / DirectInput
 
-Retained for existing vJoy users. Requires the separately installed vJoy driver, its `vJoyInterface.dll`, and Device 1 configured with at least 7 buttons for V1 or 9 for V2. This project does not install vJoy.
+Retained for users who already have vJoy installed. Requires vJoy's separate driver, `vJoyInterface.dll` and a configured device. ShifterTracker does not install vJoy.
 
-## V2 route behavior
+## Settings, logs and safety
 
-V2 maps the three shifter lanes to N-L / N / N-R. It outputs the neutral lane or lanes along the route before the target gear, even when a short camera observation of a neutral gate falls between frames. These virtual states are sent as brief button holds to give games time to poll them. Example: 1 → 2 sends N-L → N → 2; N → 5 sends N-R → 5. This is a button-sequence simulation, not a physical analog H-shifter device.
+Settings and calibration coordinates are stored in `%LOCALAPPDATA%\ShifterTracker\settings.json`. The app writes startup errors to `%LOCALAPPDATA%\ShifterTracker\startup.log`. The compact developer log is on the dashboard and records tracking status, gear transitions and output activity. If the app fails at startup, include the full startup log in a bug report.
 
-## Diagnostics and safety
-
-The **Diagnostics** page records camera frames, alignment confidence, active/candidate state and output events. Uncertain adaptive alignment is rejected. When detection is paused, the app releases any active virtual-controller button. Test in a stationary vehicle and confirm every BeamNG binding before driving. This software is an input prototype, not a safety-critical vehicle control.
+Test every BeamNG binding while stationary. This is an input prototype, not safety-critical control software. V3 is object-centered tracking, not a guarantee that a camera movement, occlusion or motion blur will always be recovered.
 
 ## Build from source
 
-Requirements: Windows x64, PowerShell 7 or Windows PowerShell 5.1, and the .NET 10 SDK. The build script downloads the pinned HIDMaestro v1.12.0 release, verifies its SHA-256, then creates a self-contained single-file executable and ZIP:
+Requirements: Windows x64, PowerShell 5.1 or later, and the .NET 10 SDK. Run:
 
 ```powershell
 .\scripts\build-windows.ps1
 ```
 
-The output and checksum are placed under `artifacts/`. Third-party binary dependencies are fetched during the build and are not stored in this repository. See [CHANGELOG.md](CHANGELOG.md), [THIRD-PARTY.md](THIRD-PARTY.md), the included Apache license text, and the bundled HIDMaestro notices.
+The script downloads the pinned HIDMaestro v2.0.0 release, checks its SHA-256 before extracting the SDK and licenses, then publishes a self-contained Windows x64 executable, licensed ZIP and checksums under `artifacts/`.
 
-## Releases
+## Release and license
 
-Tags named `v*` build and publish a GitHub Release with the Windows EXE, ZIP and SHA-256 checksums. Tags containing `-alpha` or `-beta` are marked pre-releases. Version 1.0.0 was the first stable release; 1.0.1 fixes startup responsiveness and adds startup diagnostics. Earlier prototypes are not retroactively labeled without verifiable original release assets.
+A semantic-version Git tag such as `v1.1.0` triggers the Windows release workflow and must match the project version. Any valid prerelease suffix, such as `-alpha.1`, `-beta.2` or `-rc.1`, is marked as a prerelease. The repository's first stable release was 1.0.0; 1.0.1 fixed startup issues; 1.1.0 adds the dashboard and V3 tracker. Earlier prototypes had no verifiable releases in this repository and are not retroactively tagged.
 
-## License
+ShifterTracker source is MIT-licensed. OpenCV, HIDMaestro, .NET and optional vJoy notices are listed in [THIRD-PARTY.md](THIRD-PARTY.md) and shipped with releases.
 
-Project code: MIT. Third-party components and notices are listed in [THIRD-PARTY.md](THIRD-PARTY.md).
+## Support and contributions
+
+Made by Timexo. [Donate with PayPal](https://www.paypal.com/donate/?hosted_button_id=38GT8LH75W4GU) · [Buy me a coffee](https://timexo.gumroad.com/coffee)
